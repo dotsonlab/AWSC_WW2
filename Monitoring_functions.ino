@@ -1,27 +1,3 @@
-
-//This code was written in the Arduino 1.6.9 IDE
-//An Arduino UNO was used to test this code.
-//This code was written to be easy to understand. Code efficiency was not considered.
-//Modify this code as you see fit.
-//This code will allow you to control up to 8 Atlas Scientific devices through 1 soft serial RX/TX line.
-
-//To open a channel (marked on the board as P1 to P8) send the number of the channel followed by a colon and the command (if any) that you want to send. End the string with a carriage return.
-//1:r<CR>
-//2:i<CR>
-//3:c<CR>
-//4:r<CR>
-
-//To open a channel and not send a command just send the channel number followed by a colon.
-//1:<CR>
-//3:<CR>
-
-//This code uses the Altsoft softserial library. The library file can be downloaded here: http://www.pjrc.com/teensy/td_libs_AltSoftSerial.html
-//This softserial library Automatically sets TX as pin 9 and RX as pin 8.
-
-
-//#include <AltSoftSerial.h>          //Include the software serial library  
-//AltSoftSerial Serial3;            //Name the software serial library Serial3 (this cannot be omitted)
-///GET CLOCK AND VALVES INCLUDED  
 #include <Wire.h>
 #include "Adafruit_MCP9808.h"
 #include <Adafruit_AM2315.h>
@@ -48,7 +24,7 @@ const int b=13;
 int t=0;
 int oldt =0;
 char *flotot;
-char *floinst;;
+char *floinst;
 long y;
 int sfeedp = 0;
 int snfrejectp = 0;
@@ -61,7 +37,7 @@ int rospot= 0;
 int smfp = 0;
 int smfftank= 0;
 int swastetank = 0;
-int pumpon=0;
+
 //valves
 const int mfa=27;
 const int mfao=26;
@@ -104,8 +80,23 @@ const int wwrinsec=44;
 const int wwrinseo=45;
 char wwrinsestatus[4];
 
+const int bubbleblast=53;
+int bubbleblaststatus=0;
+const int bubbler=51;
+int bubblerstatus=0;
+const int uv=52;
+int uvstatus=0;
+const int ozone=50;
+int ozonestatus=0;
+const int pump=7;
+int pumpon=0;
 
 void setup() {
+  pinMode(bubbleblast, OUTPUT);
+  pinMode(bubbler, OUTPUT);
+  pinMode(uv, OUTPUT);
+  pinMode(ozone, OUTPUT);
+  pinMode(pump, OUTPUT);
   pinMode(mfao, INPUT);
   pinMode(mfac, INPUT);
   pinMode(mfa, OUTPUT);
@@ -154,6 +145,63 @@ void open_channel() {                             //This function controls what 
   digitalWrite(s3, bitRead(port, 2));             //The bitRead command tells us what the bit value is for a specific bit location of a number 
   delay(2);                                       //this is needed to make sure the channel switching event has completed
   return;                                         //go back
+}
+void bubbles(int cmd){
+  if (cmd==0){
+    digitalWrite(bubbler,LOW);
+    bubblerstatus=0;
+  }
+  if (cmd==1){
+    digitalWrite(bubbler,HIGH);
+    bubblerstatus=1;
+  }
+}
+void hppump(int cmd){
+  if (cmd==0){
+    digitalWrite(pump,LOW);
+    pumpon=0;
+  }
+  if (cmd==1){
+    digitalWrite(pump,HIGH);
+    pumpon=1;
+  }
+}
+void o3pump(int cmd){
+  if (cmd==0){
+    digitalWrite(bubbleblast,LOW);
+    bubbleblaststatus=0;
+  }
+  if (cmd==1){
+    digitalWrite(bubbleblast,HIGH);
+    bubbleblaststatus=1;
+  }
+}
+void o3(int cmd){
+  if (cmd==0){
+    digitalWrite(ozone,LOW);
+    ozonestatus=0;
+  }
+  if (cmd==1){
+    digitalWrite(ozone,HIGH);
+    ozonestatus=1;
+  }
+}
+void uvdinisfect(int cmd){
+  if (cmd==0){
+    digitalWrite(uv,LOW);
+    uvstatus=0;
+  }
+  if (cmd==1){
+    digitalWrite(uv,HIGH);
+    uvstatus=1;
+  }
+}
+void printrelays(){
+  Serial.print("uv> ");Serial.print(uvstatus);
+  Serial.print(" ozone> ");Serial.print(ozonestatus);
+  Serial.print(" bubbleblaster> ");Serial.print(bubbleblaststatus);
+  Serial.print(" bubbler> ");Serial.print(bubblerstatus);
+  Serial.print(" pump> ");Serial.println(pumpon);
 }
 void valvecheck(){ 
   int clos=digitalRead(mfac);
@@ -316,8 +364,8 @@ void printdata(){
   Serial.print("  nfftank> "); Serial.print(snfftank);//full at 327
   Serial.print("  roftank> ");Serial.print(sroftank); //full at 326
   Serial.print("  wwtank> "); Serial.println(swwtank);//full at 259ish
-  Serial.print("nfpot position>  ");Serial.print(spotnf);
-  Serial.print("ropot position>  ");Serial.print(rospot);
+  Serial.print(" nfpot position>  ");Serial.print(spotnf);
+  Serial.print(" ropot position>  ");Serial.print(rospot);
   Serial.print("  feedpress> ");Serial.print(sfeedp);
   Serial.print("  MFpress> ");Serial.print(smfp);
   Serial.print("  NFpress> ");Serial.print(snfrejectp);
@@ -382,6 +430,7 @@ void loop() {
     printdata();
     valvecheck();
     printvalves();
+    printrelays();
   }
 }
 /*if (Serial.available() > 0) {
@@ -393,4 +442,5 @@ void loop() {
       digitalWrite(b, LOW);
       }
 }*/
+
 
