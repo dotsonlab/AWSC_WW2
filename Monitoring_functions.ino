@@ -1,8 +1,10 @@
 #include <Wire.h>
+#include "RTClib.h"
 #include "Adafruit_MCP9808.h"
 #include <Adafruit_AM2315.h>
 Adafruit_AM2315 am2315;
 Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
+RTC_DS3231 rtc;
 byte computer_bytes_received = 0;    //We need to know how many characters bytes have been received
 byte sensor_bytes_received = 0;      //We need to know how many characters bytes have been received
 int s1 = 16;                         //Arduino pin 5 to control pin S1
@@ -145,6 +147,14 @@ void open_channel() {                             //This function controls what 
   digitalWrite(s3, bitRead(port, 2));             //The bitRead command tells us what the bit value is for a specific bit location of a number 
   delay(2);                                       //this is needed to make sure the channel switching event has completed
   return;                                         //go back
+}
+void timenow(){
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
+  DateTime now = rtc.now();
+  Serial.print(now.unixtime());
 }
 void bubbles(int cmd){
   if (cmd==0){
@@ -431,6 +441,7 @@ void loop() {
     valvecheck();
     printvalves();
     printrelays();
+    timenow();
   }
 }
 /*if (Serial.available() > 0) {
@@ -442,5 +453,4 @@ void loop() {
       digitalWrite(b, LOW);
       }
 }*/
-
 
