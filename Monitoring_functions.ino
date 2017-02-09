@@ -39,7 +39,7 @@ int rospot= 0;
 int smfp = 0;
 int smfftank= 0;
 int swastetank = 0;
-
+boolean checkvalve = 0;
 //valves
 const int mfa=27;
 const int mfao=26;
@@ -81,7 +81,12 @@ const int wwrinse=46;
 const int wwrinsec=44;
 const int wwrinseo=45;
 char wwrinsestatus[4];
-
+const int rostpen=8;
+const int nfstpen=11;
+const int rodir = 10;
+const int ros = 9;
+const int nfs = 12;
+const int nfdir = 13;
 const int bubbleblast=53;
 int bubbleblaststatus=0;
 const int bubbler=51;
@@ -129,12 +134,18 @@ void setup() {
   pinMode(wwrinse, OUTPUT);
   pinMode(wwrinseo, INPUT);
   pinMode(wwrinsec, INPUT);  
-  
+  pinMode(nfdir, OUTPUT);
+  pinMode(nfs, OUTPUT);
+  pinMode(nfstpen, OUTPUT);
+  pinMode(rodir, OUTPUT);
+  pinMode(ros, OUTPUT);
+  pinMode(rostpen, OUTPUT);
   pinMode(s1, OUTPUT);              //Set the digital pin as output
   pinMode(s2, OUTPUT);              //Set the digital pin as output
   pinMode(s3, OUTPUT);               //Set the digital pin as output
   pinMode(b, OUTPUT); ///////////////
-  
+  digitalWrite(rostpen, HIGH);
+  digitalWrite(nfstpen, HIGH);
   Serial.begin(9600);               //Set the hardware serial port to 9600
   Serial3.begin(9600);            //Set the soft serial port to 9600
 }
@@ -196,7 +207,7 @@ void o3(int cmd){
     ozonestatus=1;
   }
 }
-void uvdinisfect(int cmd){
+void uvdisinfect(int cmd){
   if (cmd==0){
     digitalWrite(uv,LOW);
     uvstatus=0;
@@ -351,6 +362,86 @@ void valvepos(){
   spotnf = (spotnf*9+nfpot)/10;
   rospot = (rospot*9+ropot)/10;     
 }
+void rocontrolopen(){
+  valvepos();
+  while (rospot<800){
+        digitalWrite(rodir,LOW);
+        digitalWrite(rostpen, LOW);//make sure correct stepper
+        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+valvepos();
+}
+digitalWrite(rostpen, HIGH);
+}
+void rovalvecloseupflow(){
+  digitalWrite(rodir,HIGH);
+        digitalWrite(rostpen, LOW);//make sure correct stepper
+        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(rostpen, HIGH);
+}
+void rovalveopenupflow(){
+  digitalWrite(rodir,LOW);
+        digitalWrite(rostpen, LOW);//make sure correct stepper
+        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(rostpen, HIGH);
+}
+void nfvalvecloseupflow(){
+  digitalWrite(nfdir,HIGH);
+        digitalWrite(nfstpen, LOW);//make sure correct stepper
+        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(nfstpen, HIGH);
+}
+void nfvalveopenupflow(){
+  digitalWrite(nfdir,LOW);
+        digitalWrite(nfstpen, LOW);//make sure correct stepper
+        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        digitalWrite(nfstpen, HIGH);
+}
+
+
+void nfcontrolopen(){
+  valvepos();
+  while (rospot<800){
+        digitalWrite(nfdir,LOW);
+        digitalWrite(nfstpen, LOW);//make sure correct stepper
+        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+valvepos();
+}
+digitalWrite(nfstpen, HIGH);
+}
 
 void tanklevel(){
   int junk = analogRead(2);  
@@ -426,9 +517,11 @@ void temperature(){
 }
 
 void loop() {
-  t= millis();
-  delay(10);
-  if (t-oldt > 5000){
+ 
+}
+void waiting(int interval){
+   t= millis();
+  if (t-oldt > interval){
     strng =="1:R";
     oldt=t;
     tanklevel();
@@ -443,6 +536,110 @@ void loop() {
     printrelays();
     timenow();
   }
+}
+
+void RO(){
+if (swwtank> 80 && sroftank< 5) {//if water needs to be treated
+  return;}
+uvdisinfect(1);
+int warmuptime =millis();
+while (t-warmuptime< 900000){ //warmup uv 15 min
+ waiting(300000);
+}
+if (mfastatus !="clos") {
+  return;}
+  if (mfbstatus !="clos") {
+  return;}
+  if (mfcstatus !="clos") {
+  return;}
+  if (mfdstatus !="clos") {
+  return;}
+  if (roastatus !="clos") {
+  return;}
+  if (robstatus !="clos") {
+  return;}
+  if (nfastatus !="clos") {
+  return;}
+  if (nfbstatus !="clos") {
+  return;}
+  if (wastestatus !="clos") {
+  return;} 
+  if (wwrinsestatus !="clos") {
+  return;} 
+  digitalWrite(roa, HIGH);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (roastatus !="open"){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false; 
+    digitalWrite(rob, HIGH);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (robstatus !="open"){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false; 
+  rocontrolopen();
+ hppump(1);
+ pressures();
+ while (swwtank> 80 && sroftank< 5){
+  waiting(15000);
+  if (sfeedp>240){
+    hppump(0);
+    return;
+    }
+  if (flw[7]<1.45){
+  rovalvecloseupflow();//close valve a little bit
+ }
+ else if (flw[7]>1.55){
+  rovalveopenupflow();//open valve a little bit
+ }
+ else {waiting(15000);}
+ }
+ hppump(0);
+ rocontrolopen();
+   digitalWrite(roa, LOW);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (roastatus !="clos"){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false; 
+      digitalWrite(wwrinse, HIGH);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (wwrinsestatus !="open"){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false; 
+hppump(1);
+waiting(1);
+int rinsetime =millis();
+while (t-rinsetime< 15000){ //warmup uv 15 min
+ waiting(5000);
+}
+hppump(0);
+      digitalWrite(wwrinse, LOW);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (wwrinsestatus !="clos"){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false;
+          digitalWrite(rob, LOW);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (robstatus !="clos"){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false; 
 }
 /*if (Serial.available() > 0) {
     incomingByte = Serial.read();
