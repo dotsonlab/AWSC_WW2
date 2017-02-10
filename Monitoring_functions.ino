@@ -3,7 +3,8 @@
 #include "Adafruit_MCP9808.h"
 #include <Adafruit_AM2315.h>
 Adafruit_AM2315 am2315;
-Adafruit_MCP9808 tempsensor = Adafruit_MCP9808();
+Adafruit_MCP9808 tempsensorac = Adafruit_MCP9808();
+Adafruit_MCP9808 tempsensordc = Adafruit_MCP9808();
 RTC_DS3231 rtc;
 byte computer_bytes_received = 0;    //We need to know how many characters bytes have been received
 byte sensor_bytes_received = 0;      //We need to know how many characters bytes have been received
@@ -12,7 +13,8 @@ int s2 = 17;                         //Arduino pin 6 to control pin S2
 int s3 = 18;                         //Arduino pin 7 to control pin S3
 int port = 0;                       //what port to open
 char strng[20];               //A 20 byte character array to hold incoming data from a pc/mac/other
-char sensordata[30];                 //A 30 byte character array to hold incoming data from the sensors
+char sensordata[30];
+char sensordatajunk[30];//A 30 byte character array to hold incoming data from the sensors
 char *channel;                       //Char pointer used in string parsing
 char *cmd;   
 float flw[9];
@@ -30,57 +32,58 @@ char *floinst;
 long y;
 int sfeedp = 0;
 int snfrejectp = 0;
-int sroftank = 0;
-int snfftank = 0;
+float sroftank = 0;
+float snfftank = 0;
 int spotnf= 0;
 int srorejectp = 0;
-int swwtank = 0;
+float swwtank = 0;
 int rospot= 0;
 int smfp = 0;
-int smfftank= 0;
-int swastetank = 0;
-boolean checkvalve = 0;
+float smfftank= 0;
+float swastetank = 0;
+boolean checkvalve = false;
 //valves
+const int sol=43;
 const int mfa=27;
 const int mfao=26;
 const int mfac=25;
-char mfastatus[4];
+int mfastatus;
 const int mfb=24;
 const int mfbo=23;
 const int mfbc=22;
-char mfbstatus[4];
+int mfbstatus;
 const int mfc=30;
 const int mfco=29;
 const int mfcc=28;
-char mfcstatus[4];
+int mfcstatus;
 const int mfd=36;
 const int mfdo=35;
 const int mfdc=34;
-char mfdstatus[4];
+int mfdstatus;
 const int roa=49;
 const int roac=47;
 const int roao=48;
-char roastatus[4];
+int roastatus;
 const int rob=33;
 const int robc=31;
 const int robo=32;
-char robstatus[4];
+int robstatus;
 const int nfa=39;
 const int nfao=38;
 const int nfac=37;
-char nfastatus[4];
+int nfastatus;
 const int nfb=2;
 const int nfbo=3;
 const int nfbc=4;
-char nfbstatus[4];
+int nfbstatus;
 const int waste=42;
 const int wastec=40;
 const int wasteo=41;
-char wastestatus[4];
+int wastestatus;
 const int wwrinse=46;
 const int wwrinsec=44;
 const int wwrinseo=45;
-char wwrinsestatus[4];
+int wwrinsestatus;
 const int rostpen=8;
 const int nfstpen=11;
 const int rodir = 10;
@@ -103,6 +106,7 @@ void setup() {
   pinMode(bubbler, OUTPUT);
   pinMode(uv, OUTPUT);
   pinMode(ozone, OUTPUT);
+  pinMode(sol, OUTPUT);
   pinMode(pump, OUTPUT);
   pinMode(mfao, INPUT);
   pinMode(mfac, INPUT);
@@ -148,9 +152,19 @@ void setup() {
   digitalWrite(nfstpen, HIGH);
   Serial.begin(9600);               //Set the hardware serial port to 9600
   Serial3.begin(9600);            //Set the soft serial port to 9600
+  int junk = analogRead(2);  
+  sroftank = (analogRead(2)*.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(5);
+  snfftank = (analogRead(5)*.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(4);
+  smfftank = (analogRead(4)*.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(6);
+  swwtank = (analogRead(6)*.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(3);
+  swastetank = (analogRead(3)*.14351-28.702)*24*18*0.004329;
 }
-void open_channel() {                             //This function controls what UART port is opened.
-  port = atoi(channel);                           //Convert the ASCII char value of the port to be opened into an int    
+void open_channel(int i) {                             //This function controls what UART port is opened.
+  port = i;//atoi(channel);                           //Convert the ASCII char value of the port to be opened into an int    
   if (port < 1 || port > 8)port = 1;              //If the value of the port is within range (1-8) then open that port. If it’s not in range set it port 1  
   port -= 1;                                      //So, this device knows its ports as 0-1 but we have them labeled 1-8 by subtracting one from the port to be opened we correct for this.    
   digitalWrite(s1, bitRead(port, 0));             //Here we have two commands combined into one.
@@ -165,7 +179,7 @@ void timenow(){
     while (1);
   }
   DateTime now = rtc.now();
-  Serial.print(now.unixtime());
+  Serial.println(now.unixtime());
 }
 void bubbles(int cmd){
   if (cmd==0){
@@ -228,73 +242,73 @@ void valvecheck(){
   int clos=digitalRead(mfac);
   int ope=digitalRead(mfao);
   if (clos==1 && ope==0){
-    mfastatus=="clos";}
+    mfastatus=0;}
   else if (clos==0 && ope ==1){
-    mfastatus=="open";}
-  else {    mfastatus=="move";}
+    mfastatus=1;}
+  else {    mfastatus=2;}
   clos=digitalRead(mfbc);
   ope=digitalRead(mfbo);
   if (clos==1 && ope==0){
-    mfbstatus=="clos";}
+    mfbstatus=0;}
   else if (clos==0 && ope ==1){
-    mfbstatus=="open";}
-  else {    mfbstatus=="move";  }
+    mfbstatus=1;}
+  else {    mfbstatus=2;  }
   clos=digitalRead(mfcc);
   ope=digitalRead(mfco);
   if (clos==1 && ope==0){
-    mfcstatus=="clos";}
+    mfcstatus=0;}
   else if (clos==0 && ope ==1){
-    mfcstatus=="open";}
-  else {    mfcstatus=="move";  }
+    mfcstatus=1;}
+  else {    mfcstatus=2;  }
   clos=digitalRead(mfdc);
   ope=digitalRead(mfdo);
   if (clos==1 && ope==0){
-    mfdstatus=="clos";}
+    mfdstatus=0;}
   else if (clos==0 && ope ==1){
-    mfdstatus=="open";}
-  else {mfdstatus=="move"; }
+    mfdstatus=1;}
+  else {mfdstatus=2; }
   clos=digitalRead(roac);
   ope=digitalRead(roao);
   if (clos==1 && ope==0){
-    roastatus=="clos";}
+    roastatus=0;}
   else if (clos==0 && ope ==1){
-    roastatus=="open";}
-  else {roastatus=="move"; }
+    roastatus=1;}
+  else {roastatus=2; }
   clos=digitalRead(robc);
   ope=digitalRead(robo);
   if (clos==1 && ope==0){
-    robstatus=="clos";}
+    robstatus=0;}
   else if (clos==0 && ope ==1){
-    robstatus=="open";}
-  else {robstatus=="move"; }
+    robstatus=1;}
+  else {robstatus=2; }
   clos=digitalRead(nfac);
   ope=digitalRead(nfao);
   if (clos==1 && ope==0){
-    nfastatus=="clos";}
+    nfastatus=0;}
   else if (clos==0 && ope ==1){
-    nfastatus=="open";}
-  else {nfastatus=="move"; }
+    nfastatus=1;}
+  else {nfastatus=2; }
   clos=digitalRead(nfbc);
   ope=digitalRead(nfbo);
   if (clos==1 && ope==0){
-    nfbstatus=="clos";}
+    nfbstatus=0;}
   else if (clos==0 && ope ==1){
-    nfbstatus=="open";}
-  else {nfbstatus=="move"; }
+    nfbstatus=1;}
+  else {nfbstatus=2; }
   clos=digitalRead(wastec);
   ope=digitalRead(wasteo);
   if (clos==1 && ope==0){
-    wastestatus=="clos";}
+    wastestatus=0;}
   else if (clos==0 && ope ==1){
-    wastestatus=="open";}
-  else {wastestatus=="move"; }
+    wastestatus=1;}
+  else {wastestatus=2; }
   clos=digitalRead(wwrinsec);
   ope=digitalRead(wwrinseo);
   if (clos==1 && ope==0){
-    wwrinsestatus=="clos";}
+    wwrinsestatus=0;}
   else if (clos==0 && ope ==1){
-    wwrinsestatus=="open";}
-  else {wwrinsestatus=="move"; }
+    wwrinsestatus=1;}
+  else {wwrinsestatus=2; }
 }
 void printvalves(){
   Serial.print("mfa> ");Serial.print(mfastatus);
@@ -310,12 +324,14 @@ void printvalves(){
   }
 
 void flows(){
-  if (strng != 0) { 
+  char strng[] ="1:R";
+
+  //if (strng != 0) { 
     for (int i = 1; i < 6; i++){//If a command has been sent
-      strng[0]= i;
+     
       channel = strtok(strng, ":");          //Let's parse the string at each colon
-      cmd = strtok(NULL, ":");   //Let's parse the string at each colon
-      open_channel();  
+      cmd = "R";//strtok(NULL, ":");   //Let's parse the string at each colon
+      open_channel(i);  
     if (cmd != 0) {                               //If a command has been sent
       Serial3.print(cmd);                       //Send the command from the computer to the Atlas Scientific device using the softserial port
       Serial3.print("\r");                      //After we send the command we send a carriage return <CR>
@@ -324,15 +340,21 @@ void flows(){
     if (Serial3.available() > 0) {                 //If data has been transmitted from an Atlas Scientific device
     sensor_bytes_received = Serial3.readBytesUntil(13, sensordata, 30); //we read the data sent from the Atlas Scientific device until we see a <CR>. We also count how many character have been received
     sensordata[sensor_bytes_received] = 0;         //we add a 0 to the spot in the array just after the last character we received. This will stop us from transmitting incorrect data that may have been left in the buffer
+    //Serial.println(sensordata);//Serial.println(sensordata);
     flotot = strtok(sensordata, ",");          //Let's parse the string at each colon
     floinst = strtok(NULL, "\n");   //Let's parse the string at each colon
-    //Serial.print("instant flow> ");Serial.print(floinst);
-    //Serial.print("   totalflow> ");Serial.println(flotot);
     float f=atof(flotot);float fl=atof(floinst);
     flw[2*i-2]=f;flw[2*i-1]=fl;
-  }}strng=="";
-  //Serial.print(flw); cannot serial print a float array
- }}
+    delay(10);
+    if (Serial3.available() > 0) {                 //If data has been transmitted from an Atlas Scientific device
+    int junk = Serial3.readBytesUntil(13, sensordatajunk, 30);}
+    delay(10);
+    
+    Serial.print("port ");Serial.print(i); 
+    Serial.print(" inst ");Serial.print(floinst);
+    Serial.print(" tot ");Serial.println(flotot);
+    }}
+ }//}
 /*
 void serialEvent() {              //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
   computer_bytes_received = Serial.readBytesUntil(13, computerdata, 20); //We read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received
@@ -362,6 +384,52 @@ void valvepos(){
   spotnf = (spotnf*9+nfpot)/10;
   rospot = (rospot*9+ropot)/10;     
 }
+
+void rovalvecloseupflow(int num){
+  digitalWrite(rodir,HIGH);
+        digitalWrite(rostpen, LOW);//make sure correct stepper
+        for (int i=0; i=num; i++){
+        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        }
+        digitalWrite(rostpen, HIGH);
+}
+void rovalveopenupflow(int num){
+  digitalWrite(rodir,LOW);
+        digitalWrite(rostpen, LOW);//make sure correct stepper
+        for (int i=0; i=num; i++){
+          digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+        }
+        digitalWrite(rostpen, HIGH);
+}
+void nfvalvecloseupflow(int num){
+  digitalWrite(nfdir,HIGH);
+        digitalWrite(nfstpen, LOW);//make sure correct stepper
+        for (int i=0; i=num; i++){
+        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+}
+        digitalWrite(nfstpen, HIGH);
+}
+void nfvalveopenupflow(int num){
+  digitalWrite(nfdir,LOW);
+        digitalWrite(nfstpen, LOW);//make sure correct stepper
+        for (int i=0; i=num; i++){
+        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
+        delay(5);              // wait for a second
+        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+        delay(5);
+}
+        digitalWrite(nfstpen, HIGH);
+}
+
 void rocontrolopen(){
   valvepos();
   while (rospot<800){
@@ -375,69 +443,15 @@ valvepos();
 }
 digitalWrite(rostpen, HIGH);
 }
-void rovalvecloseupflow(){
-  digitalWrite(rodir,HIGH);
-        digitalWrite(rostpen, LOW);//make sure correct stepper
-        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(rostpen, HIGH);
-}
-void rovalveopenupflow(){
-  digitalWrite(rodir,LOW);
-        digitalWrite(rostpen, LOW);//make sure correct stepper
-        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(rostpen, HIGH);
-}
-void nfvalvecloseupflow(){
-  digitalWrite(nfdir,HIGH);
-        digitalWrite(nfstpen, LOW);//make sure correct stepper
-        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(nfstpen, HIGH);
-}
-void nfvalveopenupflow(){
-  digitalWrite(nfdir,LOW);
-        digitalWrite(nfstpen, LOW);//make sure correct stepper
-        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
-        digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
-        digitalWrite(nfstpen, HIGH);
-}
-
-
 void nfcontrolopen(){
   valvepos();
   while (rospot<800){
         digitalWrite(nfdir,LOW);
         digitalWrite(nfstpen, LOW);//make sure correct stepper
         digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-        delay(5);              // wait for a second
+        delay(25);              // wait for a second
         digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
-        delay(5);
+        delay(25);
 valvepos();
 }
 digitalWrite(nfstpen, HIGH);
@@ -445,26 +459,28 @@ digitalWrite(nfstpen, HIGH);
 
 void tanklevel(){
   int junk = analogRead(2);  
-  int roftank = (analogRead(2)*.14351-28.702)*36.5*24*0.004329;
+  float roftank = (analogRead(2)*.177-35.714286)*36.5*24*0.004329;
    junk = analogRead(5);
-  int nfftank = (analogRead(5)*.14351-28.702)*36.5*24*0.004329;
+  float nfftank = (analogRead(5)*.177165-35.433)*36.5*24*0.004329;
    junk = analogRead(4);
-  int mfftank = (analogRead(4)*.14351-28.702)*36.5*24*0.004329;
+  float mfftank = (analogRead(4)*.155172-31.0345)*36.5*24*0.004329;
    junk = analogRead(6);
-  int wwtank = (analogRead(6)*.14351-28.702)*36.5*24*0.004329;
+  float wwtank = (analogRead(6)*.14351-28.702)*36.5*24*0.004329;
    junk = analogRead(3);
-  int wastetank = (analogRead(3)*.14351-28.702)*24*18*0.004329;
+  float wastetank = (analogRead(3)*.14351-28.702)*24*18*0.004329;
   smfftank = (mfftank+smfftank*9)/10;
   sroftank = (sroftank*9+roftank)/10; //empty at 201-203
   swwtank = (swwtank*9+wwtank)/10;
   snfftank = (snfftank*9+nfftank)/10;
   swastetank = (swastetank*9+wastetank)/10;
 }
+
 void printdata(){
   Serial.print("  mfftank> ");Serial.print(smfftank); //max at glass 347-348 top of lip at 345
   Serial.print("  nfftank> "); Serial.print(snfftank);//full at 327
   Serial.print("  roftank> ");Serial.print(sroftank); //full at 326
-  Serial.print("  wwtank> "); Serial.println(swwtank);//full at 259ish
+  Serial.print("  wwtank> "); Serial.print(swwtank);//full at 259ish
+  Serial.print("  wastetank> ");Serial.println(swastetank);
   Serial.print(" nfpot position>  ");Serial.print(spotnf);
   Serial.print(" ropot position>  ");Serial.print(rospot);
   Serial.print("  feedpress> ");Serial.print(sfeedp);
@@ -478,7 +494,7 @@ void printdata(){
   Serial.print("  flows5> "); Serial.print(flw[8]);Serial.print(" ");Serial.println(flw[9]);
   Serial.print(" Outside Temp: "); Serial.print(outtemp);
   Serial.print(" AC Temp: "); Serial.print(actemp);
-  Serial.print("DC Temp: "); Serial.println(dctemp);
+  Serial.print(" DC Temp: "); Serial.println(dctemp);
 }
 
 void power(){
@@ -494,21 +510,23 @@ void power(){
   redpwr= 120*redi/1000/60;//+redpwr
 }
 
-void temperature(){
-  if (!tempsensor.begin(0x19)) {
+void temperature(){//doesnt work, only reads one value
+  if (!tempsensordc.begin(0x18)) {
     Serial.println("Couldn't find MCP9808 DC!");
     while (1);
   }
-  tempsensor.shutdown_wake(0);
-  dctemp = tempsensor.readTempC();
-  tempsensor.shutdown_wake(1);
-  if (!tempsensor.begin(0x18)) {
+  tempsensordc.shutdown_wake(0);
+  dctemp = tempsensordc.readTempC();
+  delay(250);
+  tempsensordc.shutdown_wake(1);
+  if (!tempsensorac.begin(0x19)) {
     Serial.println("Couldn't find MCP9808 AC!");
     while (1);
   }
-  tempsensor.shutdown_wake(0);
-  actemp = tempsensor.readTempC();
-  tempsensor.shutdown_wake(1);
+  tempsensorac.shutdown_wake(0);
+  actemp = tempsensorac.readTempC();
+  delay(250);
+  tempsensorac.shutdown_wake(1);
   if (! am2315.begin()) {
      Serial.println("Outside Sensor not found, check wiring & pullups!");
      while (1);
@@ -517,12 +535,16 @@ void temperature(){
 }
 
 void loop() {
- 
+//waiting(1000);
+//RO();
+//flows();
+waiting(1);
+//delay(3000);
+Serial.println("loop");
 }
 void waiting(int interval){
    t= millis();
   if (t-oldt > interval){
-    strng =="1:R";
     oldt=t;
     tanklevel();
     flows();
@@ -537,74 +559,125 @@ void waiting(int interval){
     timenow();
   }
 }
-
+void solenoid(){
+      digitalWrite(mfb,HIGH);
+      digitalWrite(mfc,LOW);
+      while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (mfbstatus ==1){
+        checkvalve = true;
+      }
+    }checkvalve = false; 
+      while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (mfcstatus ==0){
+        checkvalve = true;
+      }
+    }checkvalve = false; 
+      digitalWrite(sol,HIGH);
+      delay(1000);
+      digitalWrite(sol,LOW);
+      delay(1000);
+      digitalWrite(mfb,LOW);
+      digitalWrite(mfc,HIGH);  
+      while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (mfbstatus ==0){
+        checkvalve = true;
+      }
+    }   checkvalve = false;    
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (mfcstatus ==1){
+        checkvalve = true;
+      }
+    } checkvalve = false; 
+      }
 void RO(){
 if (swwtank> 80 && sroftank< 5) {//if water needs to be treated
   return;}
+checkvalve = false;
 uvdisinfect(1);
-int warmuptime =millis();
-while (t-warmuptime< 900000){ //warmup uv 15 min
- waiting(300000);
+int warmuptime =millis(); Serial.println("uvwarmup");
+while (t-warmuptime< 30000){//900000){ //warmup uv 15 min
+ waiting(10000);
+
 }
-if (mfastatus !="clos") {
+if (mfastatus !=0) {
   return;}
-  if (mfbstatus !="clos") {
+  if (mfbstatus !=0) {
   return;}
-  if (mfcstatus !="clos") {
+  if (mfcstatus !=0) {
   return;}
-  if (mfdstatus !="clos") {
+  if (mfdstatus !=0) {
   return;}
-  if (roastatus !="clos") {
+  if (roastatus !=0) {
   return;}
-  if (robstatus !="clos") {
+  if (robstatus !=0) {
   return;}
-  if (nfastatus !="clos") {
+  if (nfastatus !=0) {
   return;}
-  if (nfbstatus !="clos") {
+  if (nfbstatus !=0) {
   return;}
-  if (wastestatus !="clos") {
+  if (wastestatus !=0) {
   return;} 
-  if (wwrinsestatus !="clos") {
-  return;} 
+  if (wwrinsestatus !=0) {
+  return;}
+  Serial.print("all valves closed"); 
   digitalWrite(roa, HIGH);
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
-      if (roastatus !="open"){
+      if (roastatus ==1){
         checkvalve = true;
       }
-    }
+    
+    }Serial.print("first valve open ");
     checkvalve = false; 
     digitalWrite(rob, HIGH);
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
-      if (robstatus !="open"){
+      if (robstatus ==1){
         checkvalve = true;
       }
-    }
+     }Serial.print("2 valve open ");
     checkvalve = false; 
   rocontrolopen();
+  Serial.print("opened");
  hppump(1);
+ Serial.print("pumpon");
  pressures();
- while (swwtank> 80 && sroftank< 5){
+ 
+ while (swwtank< 80 && sroftank> 5){
   waiting(15000);
   if (sfeedp>240){
     hppump(0);
     return;
     }
-  if (flw[7]<1.45){
-  rovalvecloseupflow();//close valve a little bit
+ if (flw[7]==0){waiting(100);Serial.print("treating with no flow");} 
+  else if (0.1<flw[7]<=1){
+  rovalvecloseupflow(40);//close valve alot
  }
- else if (flw[7]>1.55){
-  rovalveopenupflow();//open valve a little bit
+ else if (1<flw[7]<1.35){
+  rovalvecloseupflow(20);
+ }
+ else if (1.35<=flw[7]<1.45){//close valve a little bit
+  rovalvecloseupflow(1);
+ }
+ else if (1.55<flw[7]<=1.65){
+  rovalveopenupflow(1);//open valve a little bit
+ }
+ else if (flw[7]>1.65){
+  rovalveopenupflow(20);//open valve a lot
  }
  else {waiting(15000);}
  }
+ 
  hppump(0);
  rocontrolopen();
    digitalWrite(roa, LOW);
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
-      if (roastatus !="clos"){
+      if (roastatus ==0){
         checkvalve = true;
       }
     }
@@ -612,7 +685,7 @@ if (mfastatus !="clos") {
       digitalWrite(wwrinse, HIGH);
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
-      if (wwrinsestatus !="open"){
+      if (wwrinsestatus ==1){
         checkvalve = true;
       }
     }
@@ -620,14 +693,15 @@ if (mfastatus !="clos") {
 hppump(1);
 waiting(1);
 int rinsetime =millis();
-while (t-rinsetime< 15000){ //warmup uv 15 min
+while (t-rinsetime< 15000){ //rinse 15 sec
  waiting(5000);
 }
 hppump(0);
+uvdisinfect(0);
       digitalWrite(wwrinse, LOW);
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
-      if (wwrinsestatus !="clos"){
+      if (wwrinsestatus ==0){
         checkvalve = true;
       }
     }
@@ -635,11 +709,12 @@ hppump(0);
           digitalWrite(rob, LOW);
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
-      if (robstatus !="clos"){
+      if (robstatus ==0){
         checkvalve = true;
       }
     }
     checkvalve = false; 
+    waiting(1);
 }
 /*if (Serial.available() > 0) {
     incomingByte = Serial.read();
