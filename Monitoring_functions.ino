@@ -26,7 +26,6 @@ float outtemp;
 float blkpwr;
 float redpwr;
 int incomingByte;
-const int b=13;
 unsigned long t=0;
 unsigned long oldt =0;
 unsigned long tt=0;
@@ -153,7 +152,6 @@ void setup() {
   pinMode(s1, OUTPUT);              //Set the digital pin as output
   pinMode(s2, OUTPUT);              //Set the digital pin as output
   pinMode(s3, OUTPUT);               //Set the digital pin as output
-  pinMode(b, OUTPUT); ///////////////
   digitalWrite(rostpen, HIGH);
   digitalWrite(nfstpen, HIGH);
   Serial.begin(9600);               //Set the hardware serial port to 9600
