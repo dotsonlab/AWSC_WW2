@@ -27,8 +27,10 @@ float blkpwr;
 float redpwr;
 int incomingByte;
 const int b=13;
-int t=0;
-int oldt =0;
+unsigned long t=0;
+unsigned long oldt =0;
+unsigned long tt=0;
+unsigned long bw =0;
 char *flotot;
 char *floinst;
 long y;
@@ -201,6 +203,7 @@ void hppump(int cmd){
     pumpon=0;
   }
   if (cmd==1){
+    delay(1000);
     digitalWrite(pump,HIGH);
     pumpon=1;
   }
@@ -556,11 +559,12 @@ bubbles(1);
 waiting(10000);
 //RO();
 //NF();
-MF();
+//MF();
 //flows();
 
 //delay(3000);
 Serial.println("loop");
+while(1){};
 }
 void waiting(int interval){
    t= millis();
@@ -696,7 +700,7 @@ hppump(1);
 waiting(1);
   lcd.setCursor(0, 3);
   lcd.print("rinsing    ");
-int rinsetime =millis();
+unsigned long rinsetime =millis();
 while (t-rinsetime< 15000){ //rinse 15 sec
     waiting(3000);
     if (sfeedp>240){
@@ -843,10 +847,11 @@ if (mfastatus !=0) {
     }
     checkvalve = false; 
 hppump(1);
-waiting(1);
+
   lcd.setCursor(0, 3);
   lcd.print("rinsing    ");
-int rinsetime =millis();
+unsigned long rinsetime =millis();
+waiting(1);
 while (t-rinsetime< 15000){ //rinse 15 sec
     waiting(3000);
     if (sfeedp>240){
@@ -916,13 +921,6 @@ if (mfastatus !=0) {
       if (mfbstatus ==0){
         checkvalve = true;
       }}checkvalve = false;
-  digitalWrite(mfc,HIGH);
-  checkvalve = false; 
-      while(checkvalve == false){ //wait for drain and vent valves to be closed
-      valvecheck();
-      if (mfcstatus ==1){
-        checkvalve = true;
-      }}checkvalve = false;
       digitalWrite(mfd,HIGH);
   checkvalve = false; 
       while(checkvalve == false){ //wait for drain and vent valves to be closed
@@ -930,20 +928,31 @@ if (mfastatus !=0) {
       if (mfdstatus ==1){
         checkvalve = true;
       }}checkvalve = false;
+      digitalWrite(mfc,HIGH);
+  checkvalve = false; 
+      while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (mfcstatus ==1){
+        checkvalve = true;
+      }}checkvalve = false;
+ 
  hppump(1);
  Serial.print("pumpon");
  waiting(1);
- int bw = millis();
+ bw = millis();
  while (snfftank< 79 && smfftank> 10){//(swwtank< 80 && sroftank> 5){
   waiting(10000);
+  float mfflows= 12.5-flw[5];
     lcd.setCursor(0, 3);
-    lcd.print("productflow: ");lcd.print(12.5-flw[5]);
+    lcd.print("productflow: ");lcd.print(mfflows);
     pressures();
     flows();
-if (t-bw< 180000){ //every 2 min
+    tt=millis();
+    delay(1000);
+if (tt-bw > 300000){ //every 2 min
     solenoid();
     waiting(5000);
-    bw= millis();
+    bw = tt;
     if (sfeedp>240){
     hppump(0);
     return;
@@ -962,17 +971,18 @@ hppump(0);
     digitalWrite(wwrinse, HIGH);
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
-      if (wwrinsestatus ==0){
+      if (wwrinsestatus ==1){
         checkvalve = true;
       }
     }
     checkvalve = false;
+unsigned long rinsetime =millis(); 
 hppump(1);
   lcd.setCursor(0, 3);
   lcd.print("rinsing    ");
-int rinsetime =millis();
-while (t-rinsetime< 15000){ //rinse 15 sec
-    waiting(3000);
+waiting(1);
+while (t-rinsetime < 6000){ //rinse 6 sec
+    waiting(500);
     if (sfeedp>240){
     hppump(0);
     return;
@@ -1023,8 +1033,11 @@ hppump(0);
           lcd.setCursor(0, 3);
       lcd.print("MF complete  ");
 }
- 
+      
+
 void solenoid(){
+          lcd.setCursor(0, 3);
+      lcd.print("backpulse       ");
       digitalWrite(mfb,HIGH);
       digitalWrite(mfc,LOW);
       while(checkvalve == false){ //wait for drain and vent valves to be closed
@@ -1057,4 +1070,6 @@ void solenoid(){
         checkvalve = true;
       }
     } checkvalve = false; 
+    lcd.setCursor(0, 3);
+      lcd.print("backpulse done ");
       }
