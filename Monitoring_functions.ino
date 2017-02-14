@@ -72,10 +72,9 @@ int pumpon=0;
 
 //BEGIN ---- Pin definitions
 
-//--!!!! why are these not "const"?
-int s1 = 16;                         //pin 16 to control pin S1
-int s2 = 17;                         //pin 17 to control pin S2
-int s3 = 18;                         //pin 18 to control pin S3
+const int s1 = 16;                         //pin 16 to control pin S1
+const int s2 = 17;                         //pin 17 to control pin S2
+const int s3 = 18;                         //pin 18 to control pin S3
 
 //120v relays
 const int bubbleblast=53;
@@ -137,6 +136,20 @@ const int nfstpen=11;
 const int nfs = 12;
 const int nfdir = 13;
 
+const int feedppin=9;
+const int nfrejectppin=11;
+const int rorejectppin=8;
+const int mfppin=7;
+
+const int ropotpin=1;
+const int nfpotpin=0;
+
+const int roftankpin=2;
+const int nfftankpin=5;
+const int mfftankpin=4;
+const int wwtankpin=6;
+const int wastetankpin=3;
+
 //END ---- Pin definitions
 
 //BEGIN ---- setup
@@ -145,7 +158,17 @@ void setup() {
   lcd.setBacklight(HIGH);
 
   //BEGIN ---- pin configuration
-
+  pinMode(roftankpin,INPUT);
+  pinMode(nfftankpin,INPUT);
+  pinMode(mfftankpin,INPUT);
+  pinMode(wwtankpin,INPUT);
+  pinMode(wastetankpin,INPUT);
+  pinMode(ropotpin,INPUT);
+  pinMode(nfpotpin,INPUT);
+  pinMode(feedppin,INPUT);
+  pinMode(nfrejectppin,INPUT);
+  pinMode(rorejectppin,INPUT);
+  pinMode(mfppin,INPUT);
   //120v relays
   pinMode(bubbleblast, OUTPUT);
   pinMode(bubbler, OUTPUT);
@@ -213,20 +236,25 @@ void setup() {
   pinMode(s2, OUTPUT);              //Set the digital pin as output
   pinMode(s3, OUTPUT);               //Set the digital pin as output
 
+
   Serial.begin(9600);               //Set the hardware serial port to 9600
   Serial3.begin(9600);            //Set the soft serial port to 9600
 
   //initial readings of tank levels
-  int junk = analogRead(2);
-  sroftank = (analogRead(2)*0.14351-28.702)*36.5*24*0.004329;
-   junk = analogRead(5);
-  snfftank = (analogRead(5)*0.14351-28.702)*36.5*24*0.004329;
-   junk = analogRead(4);
-  smfftank = (analogRead(4)*0.14351-28.702)*36.5*24*0.004329;
-   junk = analogRead(6);
-  swwtank = (analogRead(6)*0.14351-28.702)*36.5*24*0.004329;
-   junk = analogRead(3);
-  swastetank = (analogRead(3)*0.14351-28.702)*24*18*0.004329;
+  int junk = analogRead(roftankpin);
+  sroftank = (analogRead(roftankpin)*0.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(nfftankpin);
+  snfftank = (analogRead(nfftankpin)*0.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(mfftankpin);
+  smfftank = (analogRead(mfftankpin)*0.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(wwtankpin);
+  swwtank = (analogRead(wwtankpin)*0.14351-28.702)*36.5*24*0.004329;
+   junk = analogRead(wastetankpin);
+  swastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+   junk = analogRead(ropotpin);
+  rospot= analogRead(ropotpin);
+  junk = analogRead(nfpotpin);
+  spotnf= analogRead(nfpotpin);
 }
 
 //******     BEGIN FUNCTIONS     ******//
@@ -464,14 +492,14 @@ computerdata[computer_bytes_received] = 0; //We add a 0 to the spot in the array
 */
 
 void pressures(){
-  int junk = analogRead(9);
-  int feedp = analogRead(9)*0.60753-121.507;
-   junk = analogRead(11);
-  int nfrejectp = analogRead(11)*0.60753-121.507;
-   junk = analogRead(8);
-  int rorejectp = analogRead(8)*0.60753-121.507;
-   junk = analogRead(7);
-  int mfp = analogRead(7)*0.24301-48.603;
+  int junk = analogRead(feedppin);
+  int feedp = analogRead(feedppin)*0.60753-121.507;
+   junk = analogRead(nfrejectppin);
+  int nfrejectp = analogRead(nfrejectppin)*0.60753-121.507;
+   junk = analogRead(rorejectppin);
+  int rorejectp = analogRead(rorejectppin)*0.60753-121.507;
+   junk = analogRead(mfppin);
+  int mfp = analogRead(mfppin)*0.24301-48.603;
   snfrejectp = (snfrejectp+nfrejectp)/2;// print out the value you read:
   sfeedp = (sfeedp+feedp)/2;
   srorejectp = (srorejectp+rorejectp)/2;
@@ -479,10 +507,10 @@ void pressures(){
 }
 
 void valvepos(){
-  int junk = analogRead(1);
-  int ropot= analogRead(1);
-  junk = analogRead(0);
-  int nfpot= analogRead(0);
+  int junk = analogRead(ropotpin);
+  int ropot= analogRead(ropotpin);
+  junk = analogRead(nfpotpin);
+  int nfpot= analogRead(nfpotpin);
   spotnf = (spotnf*4+nfpot)/5;
   rospot = (rospot*4+ropot)/5;
 }
@@ -593,20 +621,20 @@ void nfcontrolopen(){
 }
 
 void tanklevel(){
-  int junk = analogRead(2);
-  float roftank = (analogRead(2)*0.177-35.714286)*36.5*24*0.004329;
+  int junk = analogRead(roftankpin);
+  float roftank = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
 
-  junk = analogRead(5);
-  float nfftank = (analogRead(5)*0.177165-35.433)*36.5*24*0.004329;
+  junk = analogRead(nfftankpin);
+  float nfftank = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
 
-  junk = analogRead(4);
-  float mfftank = (analogRead(4)*0.155172-31.0345)*36.5*24*0.004329;
+  junk = analogRead(mfftankpin);
+  float mfftank = (analogRead(mfftankpin)*0.155172-31.0345)*36.5*24*0.004329;
 
-  junk = analogRead(6);
-  float wwtank = (analogRead(6)*0.14351-28.702)*36.5*24*0.004329;
+  junk = analogRead(wwtankpin);
+  float wwtank = (analogRead(wwtankpin)*0.14351-28.702)*36.5*24*0.004329;
 
-  junk = analogRead(3);
-  float wastetank = (analogRead(3)*0.14351-28.702)*24*18*0.004329;
+  junk = analogRead(wastetankpin);
+  float wastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
 
   smfftank = (mfftank+smfftank)/2;
   sroftank = (sroftank+roftank)/2; //empty at 201-203
@@ -635,6 +663,8 @@ void printdata(){
   Serial.print(" Outside Temp: "); Serial.print(outtemp);
   Serial.print(" AC Temp: "); Serial.print(actemp);
   Serial.print(" DC Temp: "); Serial.println(dctemp);
+  Serial.print("  blkpwr:  "); Serial.print(blkpwr);
+  Serial.print("  redpwr:  "); Serial.println(redpwr);
 }
 
 void power(){
@@ -704,8 +734,8 @@ void waiting(int interval){
   }
 }
 
-void RO(){
-  if (swwtank> 80 && sroftank< 5) {//if water needs to be treated
+void RO(int target, int rinsecycle){
+  if (swwtank> target && sroftank< 5) {//if water needs to be treated
     return;}
     lcd.setCursor(0, 0);
     lcd.print("RO Treatment");
@@ -713,7 +743,7 @@ void RO(){
     uvdisinfect(1);
     int warmuptime =millis(); Serial.println("uvwarmup");
     while (t-warmuptime< 30000){//900000){ //warmup uv 15 min
-    waiting(10000);
+    waiting(5000);
   }
 
   if (mfastatus !=0) {
@@ -739,7 +769,7 @@ void RO(){
   Serial.print("all valves closed");
 
   digitalWrite(roa, HIGH);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
+  while(checkvalve == false){ //wait for valves to turn
     valvecheck();
     if (roastatus ==1){
       checkvalve = true;
@@ -749,7 +779,7 @@ void RO(){
 
   checkvalve = false;
   digitalWrite(rob, HIGH);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
+  while(checkvalve == false){ //wait for valves to turn
     valvecheck();
     if (robstatus ==1){
       checkvalve = true;
@@ -765,7 +795,7 @@ void RO(){
   Serial.print("pumpon");
   pressures();
 
-  while (swwtank< 58 && sroftank> 10){//(swwtank< 80 && sroftank> 5){
+  while (swwtank< target && sroftank> 10){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("productflow: ");lcd.print(flw[7]);
@@ -806,22 +836,24 @@ void RO(){
       valvepos();
     }
     if (flw[7]>=1.5 && flw[7]<=1.55){
-      //Serial.print("correct spot");
+      lcd.setCursor(0, 2);
+      lcd.print("correct flow");
       valvepos();}
     }
 
    hppump(0);
    rocontrolopen();
      digitalWrite(roa, LOW);//tank
-      while(checkvalve == false){ //wait for drain and vent valves to be closed
+      while(checkvalve == false){ //wait for valves to turn
         valvecheck();
         if (roastatus ==0){
           checkvalve = true;
         }
       }
       checkvalve = false;
+if (rinsecycle==1){
         digitalWrite(wwrinse, HIGH);
-      while(checkvalve == false){ //wait for drain and vent valves to be closed
+      while(checkvalve == false){ //wait for valves to turn
         valvecheck();
         if (wwrinsestatus ==1){
           checkvalve = true;
@@ -830,11 +862,10 @@ void RO(){
       checkvalve = false;
 
   hppump(1);
+  unsigned long rinsetime =millis();
   waiting(1);
   lcd.setCursor(0, 3);
   lcd.print("rinsing    ");
-
-  unsigned long rinsetime =millis();
   while (t-rinsetime< 15000){ //rinse 15 sec
     waiting(3000);
     if (sfeedp>240){
@@ -853,7 +884,7 @@ void RO(){
     }
   }
   checkvalve = false;
-
+}
   digitalWrite(rob, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
@@ -878,8 +909,8 @@ void RO(){
         }
   }*/
 
-void NF(){
-  if (sroftank> 80 && snfftank< 5) {//if water needs to be treated
+void NF(int target, int rinsecycle){
+  if (sroftank> target && snfftank< 5) {//if water needs to be treated
     return;}
 
   lcd.setCursor(0, 0);
@@ -933,7 +964,7 @@ void NF(){
   Serial.print("pumpon");
   pressures();
 
-  while (sroftank< 48 && snfftank> 10){//(swwtank< 80 && sroftank> 5){
+  while (sroftank< 55 && snfftank> 10){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("productflow: ");lcd.print(flw[9]);
@@ -977,16 +1008,16 @@ void NF(){
   hppump(0);
   nfcontrolopen();
   digitalWrite(nfa, LOW);//tank
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
+  while(checkvalve == false){
     valvecheck();
     if (nfastatus ==0){
     checkvalve = true;
     }
   }
   checkvalve = false;
-
+if (rinsecycle==1){
   digitalWrite(wwrinse, HIGH);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
+  while(checkvalve == false){
     valvecheck();
     if (wwrinsestatus ==1){
       checkvalve = true;
@@ -1008,6 +1039,7 @@ void NF(){
   }
 
   hppump(0);
+}//end rinse
   uvdisinfect(0);
   digitalWrite(wwrinse, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
@@ -1032,8 +1064,8 @@ void NF(){
   lcd.print("NF complete  ");
 }
 
-void MF(){
-  if (snfftank> 80 && smfftank< 5) {//if water needs to be treated
+void MF(int target, int rinsecycle){
+  if (snfftank> target && smfftank< 5) {//if water needs to be treated
   return;}
   lcd.setCursor(0, 0);
   lcd.print("MF Treatment");
@@ -1070,7 +1102,6 @@ void MF(){
   checkvalve = false;
 
   digitalWrite(mfb,LOW);
-  checkvalve = false;//****!!!!this seems like a duplicate
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
     if (mfbstatus ==0){
@@ -1080,7 +1111,6 @@ void MF(){
   checkvalve = false;
 
   digitalWrite(mfd,HIGH);
-  checkvalve = false; //****!!!!this seems like a duplicate
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
     if (mfdstatus ==1){
@@ -1090,7 +1120,6 @@ void MF(){
   checkvalve = false;
 
   digitalWrite(mfc,HIGH);
-  checkvalve = false;
     while(checkvalve == false){ //wait for drain and vent valves to be closed
       valvecheck();
       if (mfcstatus ==1){
@@ -1103,7 +1132,7 @@ void MF(){
   Serial.print("pumpon");
   waiting(1);
   bw = millis();
-  while (snfftank< 79 && smfftank> 10){//(swwtank< 80 && sroftank> 5){
+  while (snfftank< target && smfftank> 10){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     float mfflows= 12.5-flw[5];
     lcd.setCursor(0, 3);
@@ -1112,7 +1141,7 @@ void MF(){
     flows();
     tt=millis();
     delay(1000);
-    if (tt-bw > 300000){ //every 2 min
+    if (tt-bw > 60000){ //every 2 min
       solenoid();
       waiting(5000);
       bw = tt;
@@ -1135,7 +1164,7 @@ void MF(){
     }
   }
   checkvalve = false;
-
+if (rinsecycle==1){
   digitalWrite(wwrinse, HIGH);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
@@ -1167,7 +1196,7 @@ void MF(){
     }
   }
   checkvalve = false;
-
+}//endrinse
   digitalWrite(mfa, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
@@ -1231,9 +1260,21 @@ void solenoid(){
   checkvalve = false;
 
   digitalWrite(sol,HIGH);
-  delay(1000);
+  delay(250);
   digitalWrite(sol,LOW);
-  delay(1000);
+  delay(250);
+  digitalWrite(sol,HIGH);
+  delay(250);
+  digitalWrite(sol,LOW);
+  delay(250);
+  digitalWrite(sol,HIGH);
+  delay(250);
+  digitalWrite(sol,LOW);
+  delay(250);
+  digitalWrite(sol,HIGH);
+  delay(250);
+  digitalWrite(sol,LOW);
+  delay(250);
   digitalWrite(mfb,LOW);
   digitalWrite(mfc,HIGH);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
@@ -1260,10 +1301,10 @@ void solenoid(){
 //******     BEGIN LOOP     ******//
 void loop() {
   bubbles(1);
-  waiting(10000);
-  //RO();
-  //NF();
-  //MF();
+  waiting(1000);
+  //RO(80,1);//target then 1 for rinse cycle (put 0 for filling sequence with no rinse)
+  //NF(66,1);
+  //MF(80,1);
   //flows();
 
   //delay(3000);
