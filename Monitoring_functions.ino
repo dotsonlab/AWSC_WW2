@@ -664,11 +664,11 @@ void printdata(){
   Serial.print("  MFpress> ");Serial.print(smfp);
   Serial.print("  NFpress> ");Serial.print(snfrejectp);
   Serial.print("  ROpress> ");Serial.println(srorejectp);
-  Serial.print("flows1> "); Serial.print(flw[0]);Serial.print(" ");Serial.print(flw[1]);
-  Serial.print("  flows2> "); Serial.print(flw[2]);Serial.print(" ");Serial.print(flw[3]);
-  Serial.print("  flows3> "); Serial.print(flw[4]);Serial.print(" ");Serial.print(flw[5]);
-  Serial.print("  flows4> "); Serial.print(flw[6]);Serial.print(" ");Serial.print(flw[7]);
-  Serial.print("  flows5> "); Serial.print(flw[8]);Serial.print(" ");Serial.println(flw[9]);
+  Serial.print("flows1NFR> "); Serial.print(flw[0]);Serial.print(" ");Serial.print(flw[1]);
+  Serial.print("  flows2ROR> "); Serial.print(flw[2]);Serial.print(" ");Serial.print(flw[3]);
+  Serial.print("  flows3MFR> "); Serial.print(flw[4]);Serial.print(" ");Serial.print(flw[5]);
+  Serial.print("  flows4WWP> "); Serial.print(flw[6]);Serial.print(" ");Serial.print(flw[7]);
+  Serial.print("  flows5NFP> "); Serial.print(flw[8]);Serial.print(" ");Serial.println(flw[9]);
   Serial.print(" Outside Temp: "); Serial.print(outtemp);
   Serial.print(" AC Temp: "); Serial.print(actemp);
   Serial.print(" DC Temp: "); Serial.println(dctemp);
@@ -805,7 +805,7 @@ void RO(int target, int rinsecycle){
   Serial.print("pumpon");
   pressures();
 
-  while (swwtank< target && sroftank> 10){//(swwtank< 80 && sroftank> 5){
+  while (swwtank< target && sroftank> 5){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("productflow: ");lcd.print(flw[7]);
@@ -823,25 +823,25 @@ void RO(int target, int rinsecycle){
     }
     delay(1000);
 
-    if (flw[7]>0.1 && flw[7]<=1.0 && rospot>100){
+    if (flw[7]>0.1 && flw[7]<=1.0 && rospot>100 && pumpon==1){
       rovalvecloseupflow(40);//close valve alot
       valvepos();
     }
 
-    if (flw[7]>1.0 && flw[7]<1.35 && rospot>100){
+    if (flw[7]>1.0 && flw[7]<1.35 && rospot>100 && pumpon==1){
       rovalvecloseupflow(20);
       valvepos();
     }
 
-    if (flw[7]>1.35 && flw[7]<1.5 && rospot>100){//close valve a little bit
+    if (flw[7]>1.35 && flw[7]<1.5 && rospot>100 && pumpon==1){//close valve a little bit
       rovalvecloseupflow(10);
       valvepos();
     }
-    if (flw[7]>1.55 && flw[7]<=1.65 && rospot>100){
+    if (flw[7]>1.55 && flw[7]<=1.65 && rospot>100 && pumpon==1){
       rovalveopenupflow(10);//open valve a little bit
       valvepos();
     }
-    if (flw[7]>1.65 && rospot>100){
+    if (flw[7]>1.65 && rospot>100 && pumpon==1){
       rovalveopenupflow(20);//open valve a lot
       valvepos();
     }
@@ -975,7 +975,7 @@ void NF(int target, int rinsecycle){
   Serial.print("pumpon");
   pressures();
 
-  while (sroftank< target && snfftank> 10){//(swwtank< 80 && sroftank> 5){
+  while (sroftank< target && snfftank> 5){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("productflow: ");lcd.print(flw[9]);
@@ -991,23 +991,23 @@ void NF(int target, int rinsecycle){
       }
       delay(1000);
 
-    if (flw[9]>0.1 && flw[9]<=1.0 && spotnf>100){
+    if (flw[9]>0.1 && flw[9]<=1.0 && spotnf>100 &&pumpon==1){
       nfvalvecloseupflow(40);//close valve alot
       valvepos();
     }
-    if (flw[9]>1.0 && flw[9]<1.35 && spotnf>100){
+    if (flw[9]>1.0 && flw[9]<1.35 && spotnf>100 && pumpon==1){
       nfvalvecloseupflow(20);
       valvepos();
     }
-    if (flw[9]>1.35 && flw[9]<1.5 && spotnf>100){//close valve a little bit
+    if (flw[9]>1.35 && flw[9]<1.5 && spotnf>100 && pumpon==1){//close valve a little bit
       nfvalvecloseupflow(10);
       valvepos();
     }
-    if (flw[9]>1.55 && flw[9]<=1.65 && spotnf>100){
+    if (flw[9]>1.55 && flw[9]<=1.65 && spotnf>100 && pumpon==1){
       nfvalveopenupflow(10);//open valve a little bit
       valvepos();
     }
-    if (flw[9]>1.65 && spotnf>100){
+    if (flw[9]>1.65 && spotnf>100 && pumpon==1){
       nfvalveopenupflow(20);//open valve a lot
       valvepos();
     }
@@ -1144,7 +1144,7 @@ void MF(int target, int rinsecycle){
   Serial.print("pumpon");
   waiting(1);
   bw = millis();
-  while (snfftank< target && smfftank> 10){//(swwtank< 80 && sroftank> 5){
+  while (snfftank< target && smfftank> 5){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     float mfflows= 12.5-flw[5];
     lcd.setCursor(0, 3);
@@ -1317,15 +1317,15 @@ void fixaverages(int number){
 //******     END FUNCTIONS     ******//
 void regularday(){
   fixaverages(10);
-  if (systemstate=0){
+  if (systemstate==0){
     treattimes[0]=timnow;
-    RO(81,1);
+    RO(70,1);
     fixaverages(10);}
-  if (systemstate =3){
+  if (systemstate ==3){
     treattimes[1]=timnow;
     NF(81,1);
     fixaverages(10);}
-  if (systemstate=2){
+  if (systemstate==2){
     treattimes[2]=timnow;
     MF(81,1);
     fixaverages(10);}
@@ -1345,7 +1345,7 @@ void loop() {
   //NF(80,0);
   //MF(81,0);
   //flows();
-  regularday();
+  //regularday();
   Serial.println("loop");
   while(1){};
 }
