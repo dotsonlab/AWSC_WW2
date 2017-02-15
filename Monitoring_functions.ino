@@ -49,7 +49,9 @@ int smfp = 0;
 float smfftank= 0;
 float swastetank = 0;
 boolean checkvalve = false;
-
+int systemstate=0;
+unsigned long timnow;
+unsigned long treattimes[3];
 //initial 12v actuated ball valve status
 int mfastatus;
 int mfbstatus;
@@ -135,7 +137,7 @@ const int rodir = 10;
 const int nfstpen=11;
 const int nfs = 12;
 const int nfdir = 13;
-
+//ANALOGPINS
 const int feedppin=9;
 const int nfrejectppin=11;
 const int rorejectppin=8;
@@ -150,6 +152,9 @@ const int mfftankpin=4;
 const int wwtankpin=6;
 const int wastetankpin=3;
 
+const int blkpowerpin = 12;
+const int redpowerpin = 13;
+
 //END ---- Pin definitions
 
 //BEGIN ---- setup
@@ -158,6 +163,9 @@ void setup() {
   lcd.setBacklight(HIGH);
 
   //BEGIN ---- pin configuration
+  //ANALOGPINS
+  pinMode(blkpowerpin, INPUT);
+  pinMode(redpowerpin,INPUT);
   pinMode(roftankpin,INPUT);
   pinMode(nfftankpin,INPUT);
   pinMode(mfftankpin,INPUT);
@@ -284,6 +292,7 @@ void timenow(){
     while (1);
   }
   DateTime now = rtc.now();
+  timnow=now.unixtime();
   Serial.println(now.unixtime());
 }
 
@@ -668,16 +677,16 @@ void printdata(){
 }
 
 void power(){
-  int junk=analogRead(12);
-  int blkread= analogRead(12);
+  int junk=analogRead(blkpowerpin);
+  int blkread= analogRead(blkpowerpin);
 
-  junk=analogRead(13);
-  int redread=analogRead(13);
+  junk=analogRead(redpowerpin);
+  int redread=analogRead(redpowerpin);
 
-  int blkv=blkread*1.8/.36;
-  int redv=redread*1.8/.36;
-  int blki=blkv/.5;
-  int redi=redv/.25;
+  float blkv=blkread*1.8/.36;
+  float redv=redread*1.8/.36;
+  float blki=blkv/.5;
+  float redi=redv/.25;
   blkpwr= 120*blki/1000/60;//+blkpwr
   redpwr= 120*redi/1000/60;//+redpwr
 }
@@ -741,7 +750,10 @@ void RO(int target, int rinsecycle){
     lcd.print("RO Treatment");
     checkvalve = false;
     uvdisinfect(1);
-    int warmuptime =millis(); Serial.println("uvwarmup");
+    unsigned long warmuptime =millis();
+    lcd.setCursor(0, 3);
+    lcd.print("UV Warmup");
+    waiting(1);
     while (t-warmuptime< 30000){//900000){ //warmup uv 15 min
     waiting(5000);
   }
@@ -766,7 +778,8 @@ void RO(int target, int rinsecycle){
     return;}
   if (wwrinsestatus !=0) {
     return;}
-  Serial.print("all valves closed");
+  lcd.setCursor(0, 3);
+  lcd.print("all valves closed");
 
   digitalWrite(roa, HIGH);
   while(checkvalve == false){ //wait for valves to turn
@@ -775,7 +788,6 @@ void RO(int target, int rinsecycle){
       checkvalve = true;
     }
   }
-  Serial.print("first valve open ");
 
   checkvalve = false;
   digitalWrite(rob, HIGH);
@@ -785,11 +797,9 @@ void RO(int target, int rinsecycle){
       checkvalve = true;
     }
    }
-  Serial.print("2 valve open ");
 
   checkvalve = false;
   rocontrolopen();
-  Serial.print("opened");
 
   hppump(1);
   Serial.print("pumpon");
@@ -851,7 +861,7 @@ void RO(int target, int rinsecycle){
         }
       }
       checkvalve = false;
-if (rinsecycle==1){
+  if (rinsecycle==1){
         digitalWrite(wwrinse, HIGH);
       while(checkvalve == false){ //wait for valves to turn
         valvecheck();
@@ -895,6 +905,7 @@ if (rinsecycle==1){
   checkvalve = false;
 
   waiting(1);
+  systemstate=3;
   lcd.setCursor(0, 3);
   lcd.print("RO complete  ");
   }
@@ -964,7 +975,7 @@ void NF(int target, int rinsecycle){
   Serial.print("pumpon");
   pressures();
 
-  while (sroftank< 55 && snfftank> 10){//(swwtank< 80 && sroftank> 5){
+  while (sroftank< target && snfftank> 10){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("productflow: ");lcd.print(flw[9]);
@@ -1015,7 +1026,7 @@ void NF(int target, int rinsecycle){
     }
   }
   checkvalve = false;
-if (rinsecycle==1){
+  if (rinsecycle==1){
   digitalWrite(wwrinse, HIGH);
   while(checkvalve == false){
     valvecheck();
@@ -1060,6 +1071,7 @@ if (rinsecycle==1){
   checkvalve = false;
 
   waiting(1);
+  systemstate=2;
   lcd.setCursor(0, 3);
   lcd.print("NF complete  ");
 }
@@ -1127,7 +1139,7 @@ void MF(int target, int rinsecycle){
       }
     }
   checkvalve = false;
-
+ delay(1000);
   hppump(1);
   Serial.print("pumpon");
   waiting(1);
@@ -1141,7 +1153,7 @@ void MF(int target, int rinsecycle){
     flows();
     tt=millis();
     delay(1000);
-    if (tt-bw > 60000){ //every 2 min
+    if (tt-bw > 100000){ //every 2 min
       solenoid();
       waiting(5000);
       bw = tt;
@@ -1164,7 +1176,7 @@ void MF(int target, int rinsecycle){
     }
   }
   checkvalve = false;
-if (rinsecycle==1){
+  if (rinsecycle==1){
   digitalWrite(wwrinse, HIGH);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
@@ -1199,10 +1211,10 @@ if (rinsecycle==1){
 }//endrinse
   digitalWrite(mfa, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
-    valvecheck();
-    if (mfastatus ==0){
-      checkvalve = true;
-    }
+  valvecheck();
+  if (mfastatus ==0){
+    checkvalve = true;
+  }
   }
   checkvalve = false;
 
@@ -1234,6 +1246,7 @@ if (rinsecycle==1){
   checkvalve = false;
 
   waiting(1);
+  systemstate=1;
   lcd.setCursor(0, 3);
   lcd.print("MF complete  ");
 }
@@ -1295,19 +1308,44 @@ void solenoid(){
   lcd.setCursor(0, 3);
   lcd.print("backpulse done ");
 }
-
+void fixaverages(int number){
+  for (int i=0; i<= number; i++){
+  delay(10);
+  waiting(1);}
+  delay(3000);
+}
 //******     END FUNCTIONS     ******//
-
+void regularday(){
+  fixaverages(10);
+  if (systemstate=0){
+    treattimes[0]=timnow;
+    RO(81,1);
+    fixaverages(10);}
+  if (systemstate =3){
+    treattimes[1]=timnow;
+    NF(81,1);
+    fixaverages(10);}
+  if (systemstate=2){
+    treattimes[2]=timnow;
+    MF(81,1);
+    fixaverages(10);}
+    treattimes[3]=timnow;
+    lcd.setCursor(0, 0);
+    lcd.print("Treatment complete  ");
+    Serial.print("rostart time: "); Serial.println(treattimes[0]);
+    Serial.print("nfstart time: "); Serial.println(treattimes[1]);
+    Serial.print("mfstart time: "); Serial.println(treattimes[2]);
+    Serial.print("end time: "); Serial.println(treattimes[3]);
+    Serial.println("Water treated for the day");}
 //******     BEGIN LOOP     ******//
 void loop() {
   bubbles(1);
   waiting(1000);
   //RO(80,1);//target then 1 for rinse cycle (put 0 for filling sequence with no rinse)
-  //NF(66,1);
-  //MF(80,1);
+  //NF(80,0);
+  //MF(81,0);
   //flows();
-
-  //delay(3000);
+  regularday();
   Serial.println("loop");
   while(1){};
 }
