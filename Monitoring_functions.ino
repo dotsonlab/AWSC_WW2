@@ -46,6 +46,7 @@ int srorejectp = 0;
 float swwtank = 0;
 int rospot= 0;
 int sprefiltp1 = 0;
+int sprefiltp2 = 0;
 float spretank= 0;
 float swastetank = 0;
 boolean checkvalve = false;
@@ -137,6 +138,7 @@ const int feedppin=9;
 const int nfrejectppin=11;
 const int rorejectppin=8;
 const int prefiltp1pin=7;
+const int prefiltp2pin=14;
 
 const int ropotpin=1;
 const int nfpotpin=0;
@@ -172,6 +174,8 @@ void setup() {
   pinMode(nfrejectppin,INPUT);
   pinMode(rorejectppin,INPUT);
   pinMode(prefiltp1pin,INPUT);
+  pinMode(prefiltp2pin,INPUT);
+  
   //120v relays
   pinMode(bubbleblast, OUTPUT);
   pinMode(bubbler, OUTPUT);
@@ -240,7 +244,7 @@ void setup() {
    junk = analogRead(preftankpin);
   spretank = (analogRead(preftankpin)*0.14351-28.702)*36.5*24*0.004329;
    junk = analogRead(wwtankpin);
-  swwtank = (analogRead(wwtankpin)*0.14351-28.702)*36.5*24*0.004329;
+  swwtank = analogRead(wwtankpin)*0.65284-134.907;
    junk = analogRead(wastetankpin);
   swastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
    junk = analogRead(ropotpin);
@@ -277,7 +281,7 @@ void timenow(){
   }
   DateTime now = rtc.now();
   timnow=now.unixtime();
-  Serial.println(now.unixtime());
+  //Serial.println(now.unixtime());
 }
 
 void bubbles(int cmd){
@@ -336,13 +340,6 @@ void uvdisinfect(int cmd){
   }
 }
 
-void printrelays(){
-  Serial.print("uv> ");Serial.print(uvstatus);
-  Serial.print(" ozone> ");Serial.print(ozonestatus);
-  Serial.print(" bubbleblaster> ");Serial.print(bubbleblaststatus);
-  Serial.print(" bubbler> ");Serial.print(bubblerstatus);
-  Serial.print(" pump> ");Serial.println(pumpon);
-}
 
 void valvecheck(){
   int clos=digitalRead(pretankc);
@@ -419,16 +416,7 @@ void valvecheck(){
       }
 }
 
-void printvalves(){
-  Serial.print("pretankvalve> ");Serial.print(pretankstatus);
-  Serial.print(" prefiltvalve> ");Serial.println(prefiltstatus);
-  Serial.print(" nfa> ");Serial.print(nfastatus);
-  Serial.print(" nfb> ");Serial.print(nfbstatus);
-  Serial.print(" roa> ");Serial.print(roastatus);
-  Serial.print(" rob> ");Serial.println(robstatus);
-  Serial.print(" waste> ");Serial.print(wastestatus);
-  Serial.print(" wwrinse> ");Serial.println(wwrinsestatus);
-  }
+
 
 void flows(){
   char strng[] ="1:R";
@@ -458,12 +446,22 @@ void flows(){
     delay(10);
     }}
  }//}
-/*
+
 void serialEvent() {              //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
-  computer_bytes_received = Serial.readBytesUntil(13, computerdata, 20); //We read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received
-computerdata[computer_bytes_received] = 0; //We add a 0 to the spot in the array just after the last character we received.. This will stop us from transmitting incorrect data that may have been left in the buffer
+    if (Serial.available() > 0) {
+      incomingByte = Serial.read();
+      if (incomingByte == 'H') {
+        hppump(1);
+      }
+      if (incomingByte == 'L') {
+        hppump(0);
+        }
+  }
+
+  //computer_bytes_received = Serial.readBytesUntil(13, computerdata, 20); //We read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received
+//computerdata[computer_bytes_received] = 0; //We add a 0 to the spot in the array just after the last character we received.. This will stop us from transmitting incorrect data that may have been left in the buffer
 }
-*/
+
 
 void pressures(){
   int junk = analogRead(feedppin);
@@ -473,11 +471,13 @@ void pressures(){
    junk = analogRead(rorejectppin);
   int rorejectp = analogRead(rorejectppin)*0.60753-121.507;
    junk = analogRead(prefiltp1pin);
-  int prefiltp1 = analogRead(prefiltp1pin)*0.24301-48.603;
+  int prefiltp1 = analogRead(prefiltp1pin)*0.1215-24.3;
+  int prefiltp2 = analogRead(prefiltp2pin)*0.1215-24.3;
   snfrejectp = (snfrejectp+nfrejectp)/2;// print out the value you read:
   sfeedp = (sfeedp+feedp)/2;
   srorejectp = (srorejectp+rorejectp)/2;
   sprefiltp1 = (prefiltp1+sprefiltp1)/2;
+  sprefiltp2 = (prefiltp2+sprefiltp2)/2;
 }
 
 void valvepos(){
@@ -605,7 +605,7 @@ void tanklevel(){
   float pretank = (analogRead(preftankpin)*0.155172-31.0345)*36.5*24*0.004329;
 
   junk = analogRead(wwtankpin);
-  float wwtank = (analogRead(wwtankpin)*0.14351-28.702)*36.5*24*0.004329;
+  float wwtank = analogRead(wwtankpin)*0.65284-134.907;
 
   junk = analogRead(wastetankpin);
   float wastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
@@ -616,30 +616,35 @@ void tanklevel(){
   snfftank = (snfftank+nfftank)/2;
   swastetank = (swastetank+wastetank)/2;
 }
-
-void printdata(){
-  Serial.print("  pretank> ");Serial.print(spretank,0); //max at glass 347-348 top of lip at 345
+/*max at glass 347-348 top of lip at 345
   Serial.print("  nfftank> "); Serial.print(snfftank,0);//full at 327
   Serial.print("  roftank> ");Serial.print(sroftank,0); //full at 326
-  Serial.print("  wwtank> "); Serial.print(swwtank,0);//full at 259ish
-  Serial.print("  wastetank> ");Serial.println(swastetank,0);
-  Serial.print(" nfpot position>  ");Serial.print(spotnf);
-  Serial.print(" ropot position>  ");Serial.print(rospot);
-  Serial.print("  feedpress> ");Serial.print(sfeedp);
-  Serial.print("  prefiltp1ress> ");Serial.print(sprefiltp1);
-  Serial.print("  NFpress> ");Serial.print(snfrejectp);
-  Serial.print("  ROpress> ");Serial.println(srorejectp);
-  Serial.print("flows1NFR> "); Serial.print(flw[0]);Serial.print(" ");Serial.print(flw[1]);
-  Serial.print("  flows2ROR> "); Serial.print(flw[2]);Serial.print(" ");Serial.print(flw[3]);
-  Serial.print("  flows3PRE> "); Serial.print(flw[4]);Serial.print(" ");Serial.print(flw[5]);
-  Serial.print("  flows4WWP> "); Serial.print(flw[6]);Serial.print(" ");Serial.print(flw[7]);
-  Serial.print("  flows5NFP> "); Serial.print(flw[8]);Serial.print(" ");Serial.println(flw[9]);
-  Serial.print(" Outside Temp: "); Serial.print(outtemp);
-  Serial.print(" AC Temp: "); Serial.print(actemp);
-  Serial.print(" DC Temp: "); Serial.println(dctemp);
-  Serial.print("  blkpwr:  "); Serial.print(blkpwr);
-  Serial.print("  redpwr:  "); Serial.println(redpwr);
+  Serial.print("  wwtank> "); Serial.print(swwtank,0);//full at 259ish*/
+void printdata(){
+  Serial.print("TANKS:\t"); Serial.print("WW\t");Serial.print("ROF\t");Serial.print("NFF\t");Serial.print("GW\t");Serial.print("WASTE\t");Serial.println("time");
+  Serial.print("TANKD:\t"); Serial.print(swwtank,0);Serial.print("\t");Serial.print(sroftank,0);Serial.print("\t");Serial.print(snfftank,0);Serial.print("\t");
+  Serial.print(spretank,0);Serial.print("\t");Serial.print(swastetank,0);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+  Serial.print("PRESS:\t"); Serial.print("F\t");Serial.print("C1\t");Serial.print("C2\t");Serial.print("NFR\t");Serial.print("ROR\t");Serial.println("time");
+  Serial.print("PRESSD:\t"); Serial.print(sfeedp);Serial.print("\t");Serial.print(sprefiltp1);Serial.print("\t");Serial.print(sprefiltp2);Serial.print("\t");
+  Serial.print(snfrejectp);Serial.print("\t");Serial.print(srorejectp);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+  Serial.print("IFLOW:\t"); Serial.print("C\t");Serial.print("NFP\t");Serial.print("NFR\t");Serial.print("ROP\t");Serial.print("ROR\t");Serial.println("time");
+  Serial.print("IFLOWD:\t"); Serial.print(flw[5]);Serial.print("\t");Serial.print(flw[9]);Serial.print("\t");Serial.print(flw[1]);Serial.print("\t");
+  Serial.print(flw[7]);Serial.print("\t");Serial.print(flw[3]);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+  Serial.print("TFLOW:\t"); Serial.print("C\t");Serial.print("NFP\t");Serial.print("NFR\t");Serial.print("ROP\t");Serial.print("ROR\t");Serial.println("time");
+  Serial.print("TFLOWD:\t"); Serial.print(flw[4],0);Serial.print("\t");Serial.print(flw[8],0);Serial.print("\t");Serial.print(flw[0],0);Serial.print("\t");
+  Serial.print(flw[6],0);Serial.print("\t");Serial.print(flw[2],0);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+  Serial.print("TandP\t");Serial.print("OUT\t");Serial.print("AC\t");Serial.print("DC\t");Serial.print("PWRR\t");Serial.print("PWRB\t");Serial.println("time");
+  Serial.print("TandPD\t");Serial.print(outtemp,0);Serial.print("\t");Serial.print(actemp,0);Serial.print("\t");Serial.print(dctemp,0);Serial.print("\t");Serial.print(redpwr,1);Serial.print("\t");Serial.print(blkpwr,1);Serial.print("\t");Serial.println(timnow);
+  Serial.print("Relays\t");Serial.print("P\t");Serial.print("BUB\t");Serial.print("O3\t");Serial.print("O3pump\t");Serial.print("UV\t");Serial.println("time");
+  Serial.print("RelayD\t");Serial.print(pumpon);Serial.print("\t");Serial.print(bubblerstatus);Serial.print("\t");Serial.print(ozonestatus);Serial.print("\t");Serial.print(bubbleblaststatus);Serial.print("\t");Serial.print(uvstatus);Serial.print("\t");Serial.println(timnow);
+ Serial.print("1valves\t");Serial.print("NFPOT\t");Serial.print("NFF\t");Serial.print("NFFT\t");Serial.print("GW\t");Serial.print("CFF\t");Serial.println("time");
+  Serial.print("1valveD\t");Serial.print(spotnf);Serial.print("\t");Serial.print(nfbstatus);Serial.print("\t");Serial.print(nfastatus);Serial.print("\t");Serial.print(pretankstatus);Serial.print("\t");Serial.print(prefiltstatus);Serial.print("\t");Serial.println(timnow);
+ Serial.print("2valves\t");Serial.print("ROPOT\t");Serial.print("ROF\t");Serial.print("ROFT\t");Serial.print("WWT\t");Serial.print("WASTE\t");Serial.println("time");
+  Serial.print("2valveD\t");Serial.print(rospot);Serial.print("\t");Serial.print(robstatus);Serial.print("\t");Serial.print(roastatus);Serial.print("\t");Serial.print(wwrinsestatus);Serial.print("\t");Serial.print(wastestatus);Serial.print("\t");Serial.println(timnow);
+ Serial.println("");
+
 }
+
 
 void power(){
   int junk=analogRead(blkpowerpin);
@@ -648,12 +653,12 @@ void power(){
   junk=analogRead(redpowerpin);
   int redread=analogRead(redpowerpin);
 
-  float blkv=blkread*1.8/.36;
-  float redv=redread*1.8/.36;
-  float blki=blkv/.5;
-  float redi=redv/.25;
-  blkpwr= 120*blki/1000/60;//+blkpwr
-  redpwr= 120*redi/1000/60;//+redpwr
+  float blkv=blkread*.00977517;
+  float redv=redread*.01955;
+  //float blki=blkv/.5;
+  //float redi=redv/.25;
+  blkpwr= blkv;//+blkpwr
+  redpwr= redv;//+redpwr
 }
 
 void temperature(){
@@ -700,16 +705,18 @@ void waiting(int interval){
     temperature();
     power();
     valvepos();
-    printdata();
     valvecheck();
-    printvalves();
-    printrelays();
-    timenow();
+     timenow();
+     printdata();
+    
+    //printvalves();
+    //printrelays();
+   
   }
 }
 
 void RO(int target, int rinsecycle){
-  if (swwtank> target && sroftank< 5) {//if water needs to be treated
+  if (swwtank >= target && sroftank< 5) {//if water needs to be treated
     return;}
     lcd.setCursor(0, 0);
     lcd.print("RO Treatment");
@@ -763,7 +770,6 @@ void RO(int target, int rinsecycle){
   rocontrolopen();
 
   hppump(1);
-  Serial.print("pumpon");
   pressures();
 
   while (swwtank< target && sroftank> 5){//(swwtank< 80 && sroftank> 5){
@@ -871,18 +877,8 @@ void RO(int target, int rinsecycle){
   lcd.print("RO complete  ");
   }
 
-  /*if (Serial.available() > 0) {
-      incomingByte = Serial.read();
-      if (incomingByte == 'H') {
-        digitalWrite(b, HIGH);
-      }
-      if (incomingByte == 'L') {
-        digitalWrite(b, LOW);
-        }
-  }*/
-
 void NF(int target, int rinsecycle){
-  if (sroftank> target && snfftank< 5) {//if water needs to be treated
+  if (sroftank>= target && snfftank< 5) {//if water needs to be treated
     return;}
 
   lcd.setCursor(0, 0);
@@ -905,7 +901,6 @@ void NF(int target, int rinsecycle){
   if (wwrinsestatus !=0) {
     return;}
 
-  Serial.print("all valves closed");
   digitalWrite(nfa, HIGH);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
@@ -913,7 +908,6 @@ void NF(int target, int rinsecycle){
       checkvalve = true;
     }
   }
-  Serial.print("first valve open ");
   checkvalve = false;
 
   digitalWrite(nfb, HIGH);
@@ -923,7 +917,6 @@ void NF(int target, int rinsecycle){
       checkvalve = true;
     }
    }
-   Serial.print("2 valve open ");
   checkvalve = false;
 
   nfcontrolopen();
@@ -1034,7 +1027,7 @@ void NF(int target, int rinsecycle){
 }
 
 void PRE(int target, int rinsecycle){
-  if (snfftank> target && spretank< 5) {//if water needs to be treated
+  if (snfftank>= target && spretank< 5) {//if water needs to be treated
   return;}
   lcd.setCursor(0, 0);
   lcd.print("PRE-Treatment");
@@ -1076,11 +1069,12 @@ void PRE(int target, int rinsecycle){
   checkvalve = false;
  delay(1000);
   hppump(1);
-  Serial.print("pumpon");
   waiting(1);
   bw = millis();
   float PREflows=flw[4];
-  while (snfftank< target && spretank> 5 && (target - snfftank>flw[4]-PREflows)){//(swwtank< 80 && sroftank> 5){
+  int flowtarget = target-snfftank;
+  while (snfftank< target && spretank> 5 && (flowtarget > flw[4]-PREflows)){//(swwtank< 80 && sroftank> 5){
+    Serial.print(flowtarget);Serial.print("  "); Serial.println(flw[4]-PREflows);
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("total flow: ");lcd.print(flw[4]-PREflows);
@@ -1181,11 +1175,13 @@ void regularday(){
     treattimes[3]=timnow;
     lcd.setCursor(0, 0);
     lcd.print("Treatment complete  ");
-    Serial.print("rostart time: "); Serial.println(treattimes[0]);
+    /*Serial.print("rostart time: "); Serial.println(treattimes[0]);
     Serial.print("nfstart time: "); Serial.println(treattimes[1]);
     Serial.print("PREstart time: "); Serial.println(treattimes[2]);
     Serial.print("end time: "); Serial.println(treattimes[3]);
-    Serial.println("Water treated for the day");}
+    Serial.println("Water treated for the day");
+*/    
+    }
 
 //******     BEGIN LOOP     ******//
 void loop() {
@@ -1193,10 +1189,10 @@ void loop() {
   waiting(1000);
   //RO(80,1);//target then 1 for rinse cycle (put 0 for filling sequence with no rinse)
   //NF(80,0);
-  //PRE(81,0);
+  //PRE(80,0);
   //flows();
   //regularday();
-  Serial.println("loop");
+  //Serial.println("loop");
   while(1){};
 }
 //******     END LOOP     ******//
