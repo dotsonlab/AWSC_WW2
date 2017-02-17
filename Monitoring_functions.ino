@@ -89,7 +89,9 @@ const int pretankvalve=27;
 const int pretanko=26;
 const int pretankc=25;
 
-/*const int mfb=24;
+/* Valves removed with removal of Ceramic MF
+
+const int mfb=24;
 const int mfbo=23;
 const int mfbc=22;
 
@@ -97,6 +99,7 @@ const int mfc=30;
 const int mfco=29;
 const int mfcc=28;
 */
+
 const int prefiltvalve=36;
 const int prefilto=35;
 const int prefiltc=34;
@@ -133,7 +136,8 @@ const int rodir = 10;
 const int nfstpen=11;
 const int nfs = 12;
 const int nfdir = 13;
-//ANALOGPINS
+
+//ANALOG Sensor PINS
 const int feedppin=9;
 const int nfrejectppin=11;
 const int rorejectppin=8;
@@ -175,7 +179,7 @@ void setup() {
   pinMode(rorejectppin,INPUT);
   pinMode(prefiltp1pin,INPUT);
   pinMode(prefiltp2pin,INPUT);
-  
+
   //120v relays
   pinMode(bubbleblast, OUTPUT);
   pinMode(bubbler, OUTPUT);
@@ -231,7 +235,6 @@ void setup() {
   pinMode(s1, OUTPUT);              //Set the digital pin as output
   pinMode(s2, OUTPUT);              //Set the digital pin as output
   pinMode(s3, OUTPUT);               //Set the digital pin as output
-
 
   Serial.begin(9600);               //Set the hardware serial port to 9600
   Serial3.begin(9600);            //Set the soft serial port to 9600
@@ -340,7 +343,6 @@ void uvdisinfect(int cmd){
   }
 }
 
-
 void valvecheck(){
   int clos=digitalRead(pretankc);
   int ope=digitalRead(pretanko);
@@ -416,8 +418,6 @@ void valvecheck(){
       }
 }
 
-
-
 void flows(){
   char strng[] ="1:R";
 
@@ -447,21 +447,19 @@ void flows(){
     }}
  }//}
 
-void serialEvent() {              //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
-    if (Serial.available() > 0) {
-      incomingByte = Serial.read();
-      if (incomingByte == 'H') {
-        hppump(1);
-      }
-      if (incomingByte == 'L') {
-        hppump(0);
-        }
+void serialEvent() {   //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
+  if (Serial.available() > 0) {
+    incomingByte = Serial.read();
+    if (incomingByte == 'H') {
+      hppump(1);
+    }
+    if (incomingByte == 'L') {
+      hppump(0);
+    }
   }
-
   //computer_bytes_received = Serial.readBytesUntil(13, computerdata, 20); //We read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received
-//computerdata[computer_bytes_received] = 0; //We add a 0 to the spot in the array just after the last character we received.. This will stop us from transmitting incorrect data that may have been left in the buffer
+  //computerdata[computer_bytes_received] = 0; //We add a 0 to the spot in the array just after the last character we received.. This will stop us from transmitting incorrect data that may have been left in the buffer
 }
-
 
 void pressures(){
   int junk = analogRead(feedppin);
@@ -493,12 +491,12 @@ void rovalvecloseupflow(int num){
   lcd.setCursor(0, 2);
   lcd.print("stepper closing  ");
   digitalWrite(rodir,HIGH);
-  digitalWrite(rostpen, LOW);//make sure correct stepper
+  digitalWrite(rostpen, LOW);
 
-  for (int i=0; i<num; i++){
-    digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
-    delay(25);              // wait for a second
-    digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+  for (int i=0; i<num; i++){  //make motor take a step
+    digitalWrite(ros, HIGH);
+    delay(25);
+    digitalWrite(ros, LOW);
     delay(25);
   }
 
@@ -511,12 +509,12 @@ void rovalveopenupflow(int num){
   lcd.setCursor(0, 2);
   lcd.print("stepper opening  ");
   digitalWrite(rodir,LOW);
-  digitalWrite(rostpen, LOW);//make sure correct stepper
+  digitalWrite(rostpen, LOW);
 
-  for (int i=0; i<num; i++){
-    digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
-    delay(25);              // wait for a second
-    digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+  for (int i=0; i<num; i++){ //make motor take a step
+    digitalWrite(ros, HIGH);
+    delay(25);
+    digitalWrite(ros, LOW);
     delay(25);
   }
 
@@ -529,12 +527,12 @@ void nfvalvecloseupflow(int num){
   lcd.setCursor(0, 2);
   lcd.print("stepper closing  ");
   digitalWrite(nfdir,HIGH);
-  digitalWrite(nfstpen, LOW);//make sure correct stepper
+  digitalWrite(nfstpen, LOW);
 
-  for (int i=0; i<num; i++){
-    digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-    delay(25);              // wait for a second
-    digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+  for (int i=0; i<num; i++){ //make motor take a step
+    digitalWrite(nfs, HIGH);
+    delay(25);
+    digitalWrite(nfs, LOW);
     delay(25);
   }
 
@@ -547,12 +545,12 @@ void nfvalveopenupflow(int num){
   lcd.setCursor(0, 2);
   lcd.print("stepper opening  ");
   digitalWrite(nfdir,LOW);
-  digitalWrite(nfstpen, LOW);//make sure correct stepper
+  digitalWrite(nfstpen, LOW);
 
-  for (int i=0; i<num; i++){
-    digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-    delay(25);              // wait for a second
-    digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+  for (int i=0; i<num; i++){ //make motor take a step
+    digitalWrite(nfs, HIGH);
+    delay(25);
+    digitalWrite(nfs, LOW);
     delay(25);
   }
 
@@ -567,10 +565,10 @@ void rocontrolopen(){
 
   while (rospot<800){
     digitalWrite(rodir,LOW);
-    digitalWrite(rostpen, LOW);//make sure correct stepper
-    digitalWrite(ros, HIGH);  // turn the LED on (HIGH is the voltage level)
-    delay(25);              // wait for a second
-    digitalWrite(ros, LOW);    // turn the LED off by making the voltage LOW
+    digitalWrite(rostpen, LOW);
+    digitalWrite(ros, HIGH); //make motor take a step
+    delay(25);
+    digitalWrite(ros, LOW);
     delay(25);
     valvepos();
   }
@@ -583,10 +581,10 @@ void nfcontrolopen(){
 
   while (spotnf<800){
     digitalWrite(nfdir,LOW);
-    digitalWrite(nfstpen, LOW);//make sure correct stepper
-    digitalWrite(nfs, HIGH);  // turn the LED on (HIGH is the voltage level)
-    delay(25);              // wait for a second
-    digitalWrite(nfs, LOW);    // turn the LED off by making the voltage LOW
+    digitalWrite(nfstpen, LOW);
+    digitalWrite(nfs, HIGH);  //make motor take a step
+    delay(25);
+    digitalWrite(nfs, LOW);
     delay(25);
     valvepos();
   }
@@ -611,40 +609,44 @@ void tanklevel(){
   float wastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
 
   spretank = (pretank+spretank)/2;
-  sroftank = (sroftank+roftank)/2; //empty at 201-203
+  sroftank = (sroftank+roftank)/2;
   swwtank = (swwtank+wwtank)/2;
   snfftank = (snfftank+nfftank)/2;
   swastetank = (swastetank+wastetank)/2;
 }
-/*max at glass 347-348 top of lip at 345
-  Serial.print("  nfftank> "); Serial.print(snfftank,0);//full at 327
-  Serial.print("  roftank> ");Serial.print(sroftank,0); //full at 326
-  Serial.print("  wwtank> "); Serial.print(swwtank,0);//full at 259ish*/
+
 void printdata(){
   Serial.print("TANKS:\t"); Serial.print("WW\t");Serial.print("ROF\t");Serial.print("NFF\t");Serial.print("GW\t");Serial.print("WASTE\t");Serial.println("time");
   Serial.print("TANKD:\t"); Serial.print(swwtank,0);Serial.print("\t");Serial.print(sroftank,0);Serial.print("\t");Serial.print(snfftank,0);Serial.print("\t");
-  Serial.print(spretank,0);Serial.print("\t");Serial.print(swastetank,0);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+
+  Serial.print(spretank,0);Serial.print("\t");Serial.print(swastetank,0);Serial.print("\t");Serial.println(timnow);
   Serial.print("PRESS:\t"); Serial.print("F\t");Serial.print("C1\t");Serial.print("C2\t");Serial.print("NFR\t");Serial.print("ROR\t");Serial.println("time");
+
   Serial.print("PRESSD:\t"); Serial.print(sfeedp);Serial.print("\t");Serial.print(sprefiltp1);Serial.print("\t");Serial.print(sprefiltp2);Serial.print("\t");
-  Serial.print(snfrejectp);Serial.print("\t");Serial.print(srorejectp);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+  Serial.print(snfrejectp);Serial.print("\t");Serial.print(srorejectp);Serial.print("\t");Serial.println(timnow);
+
   Serial.print("IFLOW:\t"); Serial.print("C\t");Serial.print("NFP\t");Serial.print("NFR\t");Serial.print("ROP\t");Serial.print("ROR\t");Serial.println("time");
   Serial.print("IFLOWD:\t"); Serial.print(flw[5]);Serial.print("\t");Serial.print(flw[9]);Serial.print("\t");Serial.print(flw[1]);Serial.print("\t");
-  Serial.print(flw[7]);Serial.print("\t");Serial.print(flw[3]);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+  Serial.print(flw[7]);Serial.print("\t");Serial.print(flw[3]);Serial.print("\t");Serial.println(timnow);
+
   Serial.print("TFLOW:\t"); Serial.print("C\t");Serial.print("NFP\t");Serial.print("NFR\t");Serial.print("ROP\t");Serial.print("ROR\t");Serial.println("time");
   Serial.print("TFLOWD:\t"); Serial.print(flw[4],0);Serial.print("\t");Serial.print(flw[8],0);Serial.print("\t");Serial.print(flw[0],0);Serial.print("\t");
-  Serial.print(flw[6],0);Serial.print("\t");Serial.print(flw[2],0);Serial.print("\t");Serial.println(timnow); //max at glass 347-348 top of lip at 345
+  Serial.print(flw[6],0);Serial.print("\t");Serial.print(flw[2],0);Serial.print("\t");Serial.println(timnow);
+
   Serial.print("TandP\t");Serial.print("OUT\t");Serial.print("AC\t");Serial.print("DC\t");Serial.print("PWRR\t");Serial.print("PWRB\t");Serial.println("time");
   Serial.print("TandPD\t");Serial.print(outtemp,0);Serial.print("\t");Serial.print(actemp,0);Serial.print("\t");Serial.print(dctemp,0);Serial.print("\t");Serial.print(redpwr,1);Serial.print("\t");Serial.print(blkpwr,1);Serial.print("\t");Serial.println(timnow);
+
   Serial.print("Relays\t");Serial.print("P\t");Serial.print("BUB\t");Serial.print("O3\t");Serial.print("O3pump\t");Serial.print("UV\t");Serial.println("time");
   Serial.print("RelayD\t");Serial.print(pumpon);Serial.print("\t");Serial.print(bubblerstatus);Serial.print("\t");Serial.print(ozonestatus);Serial.print("\t");Serial.print(bubbleblaststatus);Serial.print("\t");Serial.print(uvstatus);Serial.print("\t");Serial.println(timnow);
- Serial.print("1valves\t");Serial.print("NFPOT\t");Serial.print("NFF\t");Serial.print("NFFT\t");Serial.print("GW\t");Serial.print("CFF\t");Serial.println("time");
+
+  Serial.print("1valves\t");Serial.print("NFPOT\t");Serial.print("NFF\t");Serial.print("NFFT\t");Serial.print("GW\t");Serial.print("CFF\t");Serial.println("time");
   Serial.print("1valveD\t");Serial.print(spotnf);Serial.print("\t");Serial.print(nfbstatus);Serial.print("\t");Serial.print(nfastatus);Serial.print("\t");Serial.print(pretankstatus);Serial.print("\t");Serial.print(prefiltstatus);Serial.print("\t");Serial.println(timnow);
- Serial.print("2valves\t");Serial.print("ROPOT\t");Serial.print("ROF\t");Serial.print("ROFT\t");Serial.print("WWT\t");Serial.print("WASTE\t");Serial.println("time");
+
+  Serial.print("2valves\t");Serial.print("ROPOT\t");Serial.print("ROF\t");Serial.print("ROFT\t");Serial.print("WWT\t");Serial.print("WASTE\t");Serial.println("time");
   Serial.print("2valveD\t");Serial.print(rospot);Serial.print("\t");Serial.print(robstatus);Serial.print("\t");Serial.print(roastatus);Serial.print("\t");Serial.print(wwrinsestatus);Serial.print("\t");Serial.print(wastestatus);Serial.print("\t");Serial.println(timnow);
- Serial.println("");
 
+  Serial.println("");
 }
-
 
 void power(){
   int junk=analogRead(blkpowerpin);
@@ -653,12 +655,10 @@ void power(){
   junk=analogRead(redpowerpin);
   int redread=analogRead(redpowerpin);
 
-  float blkv=blkread*.00977517;
-  float redv=redread*.01955;
-  //float blki=blkv/.5;
-  //float redi=redv/.25;
-  blkpwr= blkv;//+blkpwr
-  redpwr= redv;//+redpwr
+  float blkv=blkread*0.00977517;
+  float redv=redread*0.01955;
+  blkpwr= blkv;
+  redpwr= redv;
 }
 
 void temperature(){
@@ -696,7 +696,7 @@ void temperature(){
 }
 
 void waiting(int interval){
-   t= millis();
+  t= millis();
   if (t-oldt > interval){
     oldt=t;
     tanklevel();
@@ -706,12 +706,8 @@ void waiting(int interval){
     power();
     valvepos();
     valvecheck();
-     timenow();
-     printdata();
-    
-    //printvalves();
-    //printrelays();
-   
+    timenow();
+    printdata();
   }
 }
 
@@ -746,6 +742,7 @@ void RO(int target, int rinsecycle){
     return;}
   if (wwrinsestatus !=0) {
     return;}
+
   lcd.setCursor(0, 3);
   lcd.print("all valves closed");
 
@@ -818,50 +815,52 @@ void RO(int target, int rinsecycle){
       valvepos();}
     }
 
-   hppump(0);
-   rocontrolopen();
-     digitalWrite(roa, LOW);//tank
-      while(checkvalve == false){ //wait for valves to turn
-        valvecheck();
-        if (roastatus ==0){
-          checkvalve = true;
-        }
-      }
-      checkvalve = false;
-  if (rinsecycle==1){
-        digitalWrite(wwrinse, HIGH);
-      while(checkvalve == false){ //wait for valves to turn
-        valvecheck();
-        if (wwrinsestatus ==1){
-          checkvalve = true;
-        }
-      }
-      checkvalve = false;
-
-  hppump(1);
-  unsigned long rinsetime =millis();
-  waiting(1);
-  lcd.setCursor(0, 3);
-  lcd.print("rinsing    ");
-  while (t-rinsetime< 15000){ //rinse 15 sec
-    waiting(3000);
-    if (sfeedp>240){
     hppump(0);
-    return;
+    rocontrolopen();
+    digitalWrite(roa, LOW);//tank
+    while(checkvalve == false){ //wait for valves to turn
+      valvecheck();
+      if (roastatus ==0){
+        checkvalve = true;
+      }
     }
+    checkvalve = false;
+
+  if (rinsecycle==1){
+    digitalWrite(wwrinse, HIGH);
+    while(checkvalve == false){ //wait for valves to turn
+      valvecheck();
+      if (wwrinsestatus ==1){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false;
+
+    hppump(1);
+    unsigned long rinsetime =millis();
+    waiting(1);
+    lcd.setCursor(0, 3);
+    lcd.print("rinsing    ");
+    while (t-rinsetime< 15000){ //rinse 15 sec
+      waiting(3000);
+      if (sfeedp>240){
+      hppump(0);
+      return;
+      }
+    }
+
+    hppump(0);
+    uvdisinfect(0);
+    digitalWrite(wwrinse, LOW);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (wwrinsestatus ==0){
+        checkvalve = true;
+      }
+    }
+  checkvalve = false;
   }
 
-  hppump(0);
-  uvdisinfect(0);
-  digitalWrite(wwrinse, LOW);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
-  valvecheck();
-  if (wwrinsestatus ==0){
-    checkvalve = true;
-    }
-  }
-  checkvalve = false;
-}
   digitalWrite(rob, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
     valvecheck();
@@ -875,7 +874,7 @@ void RO(int target, int rinsecycle){
   systemstate=3;
   lcd.setCursor(0, 3);
   lcd.print("RO complete  ");
-  }
+}
 
 void NF(int target, int rinsecycle){
   if (sroftank>= target && snfftank< 5) {//if water needs to be treated
@@ -916,7 +915,7 @@ void NF(int target, int rinsecycle){
     if (nfbstatus ==1){
       checkvalve = true;
     }
-   }
+  }
   checkvalve = false;
 
   nfcontrolopen();
@@ -934,12 +933,12 @@ void NF(int target, int rinsecycle){
     if (sfeedp>240){
       hppump(0);
       return;
-      }
+    }
     valvepos();
     if (spotnf<100){
       return;
-      }
-      delay(1000);
+    }
+    delay(1000);
 
     if (flw[9]>0.1 && flw[9]<=1.0 && spotnf>100 &&pumpon==1){
       nfvalvecloseupflow(40);//close valve alot
@@ -976,31 +975,32 @@ void NF(int target, int rinsecycle){
     }
   }
   checkvalve = false;
+
   if (rinsecycle==1){
-  digitalWrite(wwrinse, HIGH);
-  while(checkvalve == false){
-    valvecheck();
-    if (wwrinsestatus ==1){
-      checkvalve = true;
+    digitalWrite(wwrinse, HIGH);
+    while(checkvalve == false){
+      valvecheck();
+      if (wwrinsestatus ==1){
+        checkvalve = true;
+      }
     }
-  }
-  checkvalve = false;
+    checkvalve = false;
 
-  hppump(1);
-  lcd.setCursor(0, 3);
-  lcd.print("rinsing    ");
-  unsigned long rinsetime =millis();
-  waiting(1);
-  while (t-rinsetime< 15000){ //rinse 15 sec
-    waiting(3000);
-    if (sfeedp>240){
+    hppump(1);
+    lcd.setCursor(0, 3);
+    lcd.print("rinsing    ");
+    unsigned long rinsetime =millis();
+    waiting(1);
+    while (t-rinsetime< 15000){ //rinse 15 sec
+      waiting(3000);
+      if (sfeedp>240){
+      hppump(0);
+      return;
+      }
+    }
     hppump(0);
-    return;
-    }
-  }
+  }//end rinse
 
-  hppump(0);
-}//end rinse
   uvdisinfect(0);
   digitalWrite(wwrinse, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
@@ -1067,7 +1067,7 @@ void PRE(int target, int rinsecycle){
     }
   }
   checkvalve = false;
- delay(1000);
+  delay(1000);
   hppump(1);
   waiting(1);
   bw = millis();
@@ -1080,7 +1080,6 @@ void PRE(int target, int rinsecycle){
     lcd.print("total flow: ");lcd.print(flw[4]-PREflows);
     pressures();
     flows();
-
   }
 
   hppump(0);
@@ -1094,47 +1093,51 @@ void PRE(int target, int rinsecycle){
       checkvalve = true;
     }
   }
+
   checkvalve = false;
   if (rinsecycle==1){
-  digitalWrite(wwrinse, HIGH);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
-    valvecheck();
-    if (wwrinsestatus ==1){
-      checkvalve = true;
+    digitalWrite(wwrinse, HIGH);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (wwrinsestatus ==1){
+        checkvalve = true;
+      }
     }
-  }
-  checkvalve = false;
 
-  unsigned long rinsetime =millis();
-  hppump(1);
-  lcd.setCursor(0, 3);
-  lcd.print("rinsing    ");
-  waiting(1);
-  while (t-rinsetime < 5000){ //rinse 5 sec
-    waiting(500);
-    if (sfeedp>240){
+    checkvalve = false;
+
+    unsigned long rinsetime =millis();
+    hppump(1);
+    lcd.setCursor(0, 3);
+    lcd.print("rinsing    ");
+    waiting(1);
+    while (t-rinsetime < 5000){ //rinse 5 sec
+      waiting(500);
+      if (sfeedp>240){
+      hppump(0);
+      return;
+      }
+    }
+
     hppump(0);
-    return;
+    digitalWrite(wwrinse, LOW);
+    while(checkvalve == false){ //wait for drain and vent valves to be closed
+      valvecheck();
+      if (wwrinsestatus ==0){
+        checkvalve = true;
+      }
     }
-  }
+    checkvalve = false;
+  }//endrinse
 
-  hppump(0);
-  digitalWrite(wwrinse, LOW);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
-    valvecheck();
-    if (wwrinsestatus ==0){
-      checkvalve = true;
-    }
-  }
-  checkvalve = false;
-}//endrinse
   digitalWrite(pretankvalve, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
-  valvecheck();
-  if (pretankstatus ==0){
-    checkvalve = true;
+    valvecheck();
+    if (pretankstatus ==0){
+      checkvalve = true;
+    }
   }
-  }
+
   checkvalve = false;
   digitalWrite(prefiltvalve, LOW);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
@@ -1157,31 +1160,36 @@ void fixaverages(int number){
   waiting(1);}
   delay(3000);
 }
-//******     END FUNCTIONS     ******//
+
 void regularday(){
   fixaverages(10);
   if (systemstate==0){
     treattimes[0]=timnow;
     RO(70,1);
-    fixaverages(10);}
+    fixaverages(10);
+  }
   if (systemstate ==3){
     treattimes[1]=timnow;
     NF(81,1);
-    fixaverages(10);}
+    fixaverages(10);
+  }
   if (systemstate==2){
     treattimes[2]=timnow;
     PRE(81,1);
-    fixaverages(10);}
-    treattimes[3]=timnow;
-    lcd.setCursor(0, 0);
-    lcd.print("Treatment complete  ");
-    /*Serial.print("rostart time: "); Serial.println(treattimes[0]);
-    Serial.print("nfstart time: "); Serial.println(treattimes[1]);
-    Serial.print("PREstart time: "); Serial.println(treattimes[2]);
-    Serial.print("end time: "); Serial.println(treattimes[3]);
-    Serial.println("Water treated for the day");
-*/    
-    }
+    fixaverages(10);
+  }
+  treattimes[3]=timnow;
+  lcd.setCursor(0, 0);
+  lcd.print("Treatment complete  ");
+  /*Serial.print("rostart time: "); Serial.println(treattimes[0]);
+  Serial.print("nfstart time: "); Serial.println(treattimes[1]);
+  Serial.print("PREstart time: "); Serial.println(treattimes[2]);
+  Serial.print("end time: "); Serial.println(treattimes[3]);
+  Serial.println("Water treated for the day");
+  */
+}
+
+//******     END FUNCTIONS     ******//
 
 //******     BEGIN LOOP     ******//
 void loop() {
