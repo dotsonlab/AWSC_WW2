@@ -31,6 +31,8 @@ float blkpwr;
 float redpwr;
 int incomingByte;
 unsigned long t=0;
+unsigned long o3time=0;
+unsigned long o3starttime=0;
 unsigned long oldt =0;
 unsigned long tt=0;
 unsigned long bw =0;
@@ -238,14 +240,14 @@ void setup() {
 
   Serial.begin(9600);               //Set the hardware serial port to 9600
   Serial3.begin(9600);            //Set the soft serial port to 9600
-
+  o3starttime =t;
   //initial readings of tank levels
   int junk = analogRead(roftankpin);
   sroftank = (analogRead(roftankpin)*0.14351-28.702)*36.5*24*0.004329;
    junk = analogRead(nfftankpin);
   snfftank = (analogRead(nfftankpin)*0.14351-28.702)*36.5*24*0.004329;
    junk = analogRead(preftankpin);
-  spretank = (analogRead(preftankpin)*0.14351-28.702)*36.5*24*0.004329;
+  spretank = analogRead(preftankpin)*0.668388-146.32479;
    junk = analogRead(wwtankpin);
   swwtank = analogRead(wwtankpin)*0.65284-134.907;
    junk = analogRead(wastetankpin);
@@ -254,6 +256,7 @@ void setup() {
   rospot= analogRead(ropotpin);
   junk = analogRead(nfpotpin);
   spotnf= analogRead(nfpotpin);
+  digitalWrite(pump,LOW);
 }
 
 //******     BEGIN FUNCTIONS     ******//
@@ -600,7 +603,7 @@ void tanklevel(){
   float nfftank = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
 
   junk = analogRead(preftankpin);
-  float pretank = (analogRead(preftankpin)*0.155172-31.0345)*36.5*24*0.004329;
+  float pretank = analogRead(preftankpin)*0.668388-146.32479;
 
   junk = analogRead(wwtankpin);
   float wwtank = analogRead(wwtankpin)*0.65284-134.907;
@@ -694,7 +697,21 @@ void temperature(){
 
   outtemp= am2315.readTemperature();
 }
+void o3calc(){
+if (systemstate ==1){  
+  if (t- o3time -o3starttime > 7200000 && ozonestatus ==0 && swwtank>20){//7200000){
+  o3time = swwtank *2 *60000/6.66;
+  o3pump(1);
+  delay(10000);
+  o3(1);
+  o3starttime=t;
+ }
 
+  if (t - o3starttime >= o3time && ozonestatus ==1){
+  o3(0);
+  delay(60000);
+  o3pump(0);
+} }}
 void waiting(int interval){
   t= millis();
   if (t-oldt > interval){
@@ -708,6 +725,7 @@ void waiting(int interval){
     valvecheck();
     timenow();
     printdata();
+    o3calc();
   }
 }
 
@@ -919,9 +937,7 @@ void NF(int target, int rinsecycle){
   checkvalve = false;
 
   nfcontrolopen();
-  Serial.print("opened");
   hppump(1);
-  Serial.print("pumpon");
   pressures();
 
   while (sroftank< target && snfftank> 5){//(swwtank< 80 && sroftank> 5){
@@ -1048,7 +1064,6 @@ void PRE(int target, int rinsecycle){
     return;}
   if (wwrinsestatus !=0) {
     return;}
-  Serial.print("all valves closed");
 
   digitalWrite(pretankvalve,HIGH);
   while(checkvalve == false){ //wait for drain and vent valves to be closed
@@ -1074,7 +1089,7 @@ void PRE(int target, int rinsecycle){
   float PREflows=flw[4];
   int flowtarget = target-snfftank;
   while (snfftank< target && spretank> 5 && (flowtarget > flw[4]-PREflows)){//(swwtank< 80 && sroftank> 5){
-    Serial.print(flowtarget);Serial.print("  "); Serial.println(flw[4]-PREflows);
+    //Serial.print(flowtarget);Serial.print("  "); Serial.println(flw[4]-PREflows);
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("total flow: ");lcd.print(flw[4]-PREflows);
@@ -1165,7 +1180,7 @@ void regularday(){
   fixaverages(10);
   if (systemstate==0){
     treattimes[0]=timnow;
-    RO(70,1);
+    RO(80,1);
     fixaverages(10);
   }
   if (systemstate ==3){
@@ -1181,12 +1196,6 @@ void regularday(){
   treattimes[3]=timnow;
   lcd.setCursor(0, 0);
   lcd.print("Treatment complete  ");
-  /*Serial.print("rostart time: "); Serial.println(treattimes[0]);
-  Serial.print("nfstart time: "); Serial.println(treattimes[1]);
-  Serial.print("PREstart time: "); Serial.println(treattimes[2]);
-  Serial.print("end time: "); Serial.println(treattimes[3]);
-  Serial.println("Water treated for the day");
-  */
 }
 
 //******     END FUNCTIONS     ******//
@@ -1195,12 +1204,13 @@ void regularday(){
 void loop() {
   bubbles(1);
   waiting(1000);
+  systemstate =1;
   //RO(80,1);//target then 1 for rinse cycle (put 0 for filling sequence with no rinse)
   //NF(80,0);
   //PRE(80,0);
   //flows();
   //regularday();
   //Serial.println("loop");
-  while(1){};
+  //while(1){};
 }
 //******     END LOOP     ******//
