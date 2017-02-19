@@ -2,11 +2,38 @@ import time
 import schedule  #will have to pip install schedule (library)
 import threading
 import Tkinter as Tk
+import serial
+import sys
+import os.path
+
+now=time.localtime(time.time())
+currentmonth=now.tm_mon
+currentday=now.tm_mday
+currentyear=now.tm_year
+filename = "{0}_{1}_{2}_WWT-log.txt".format(currentyear, currentmonth, currentday)
+
+ser=serial.Serial('/dev/ttyACM0',9600)
+time.sleep(1)
+
 
 def RunAndLog():
     while not e.isSet():
         schedule.run_pending()
-        #print "I will be datalogging and providing initiation commands here!"
+
+        #get current time
+    	now=time.localtime(time.time())
+    	currentmonth=now.tm_mon
+    	currentday=now.tm_mday
+    	currentyear=now.tm_year
+    	filename = "{0}_{1}_{2}_WWT-log.txt".format(currentyear, currentmonth, currentday)
+
+        #open file and save serial data from arduino
+    	file=open(filename,"a")
+    	message=ser.readline()
+    	print(message)
+    	file.write(message)
+    	file.flush()
+    	file.close()
         time.sleep(.1)
 
 def TreatmentTimer():
