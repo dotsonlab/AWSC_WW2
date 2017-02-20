@@ -156,11 +156,11 @@ def TandP():
 	file.flush()
 	file.close()
 
-def _RegularDay(t):
+def _RegularDay():
     print "Regular Day Treatment"
     #ser.write(cmd)
 
-def _WasteDay(t):
+def _WasteDay():
     print "Waste Day Treatment"
     #ser.write(cmd)
 
