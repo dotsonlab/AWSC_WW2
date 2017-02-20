@@ -157,11 +157,11 @@ def TandP():
 	file.flush()
 	file.close()
 
-def _RegularDay():
+def _RegularDay(t):
     print "Regular Day Treatment"
     #ser.write(cmd)
 
-def _WasteDay():
+def _WasteDay(t):
     print "Waste Day Treatment"
     #ser.write(cmd)
 
@@ -202,41 +202,41 @@ root = Tk.Tk()
 root.wm_title("WWT Control")
 RegButton = Tk.Button(master=root, text='Regular Day', command=_RegularDay)
 RegButton.grid(row=0, column=4)
-RegButton.config(height = 2, width = 8)
+RegButton.config(height = 5, width = 16)
 
 WasteButton = Tk.Button(master=root, text='Waste Day', command=_WasteDay)
 WasteButton.grid(row=1, column=4)
-WasteButton.config(height = 2, width = 8)
+WasteButton.config(height = 5, width = 16)
 
 QuitButton = Tk.Button(master=root, text='Quit', command=_quit) #the quit button
 QuitButton.grid(row=5, column=4)
-QuitButton.config(height = 2, width = 8)
+QuitButton.config(height = 5, width = 16)
 
 CFButton = Tk.Button(master=root, text='CF', command=_CartridgeFilter)
 CFButton.grid(row=0, column=0)
-CFButton.config(height = 2, width = 8)
+CFButton.config(height = 5, width = 16)
 
 CFWOButton = Tk.Button(master=root, text='CF wo R', command=_CartridgeFilterWO)
 CFWOButton.grid(row=0, column=2)
-CFWOButton.config(height = 2, width = 8)
+CFWOButton.config(height = 5, width = 16)
 
 NFButton = Tk.Button(master=root, text='NF', command=_Nanofilter)
 NFButton.grid(row=1, column=0)
-NFButton.config(height = 2, width = 8)
+NFButton.config(height = 5, width = 16)
 
 NFWOButton = Tk.Button(master=root, text='NF wo R', command=_NanofilterWO)
 NFWOButton.grid(row=1, column=2)
-NFWOButton.config(height = 2, width = 8)
+NFWOButton.config(height = 5, width = 16)
 
 ROButton = Tk.Button(master=root, text='RO', command=_ReverseOsmosis)
 ROButton.grid(row=2, column=0)
-ROButton.config(height = 2, width = 8)
+ROButton.config(height = 5, width = 16)
 
 ROWOButton = Tk.Button(master=root, text='RO wo R', command=_ReverseOsmosisWO)
 ROWOButton.grid(row=2, column=2)
-ROWOButton.config(height = 2, width = 8)
+ROWOButton.config(height = 5, width = 16)
 
-schedule.every().monday.at("10:52").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
+schedule.every().monday.at("10:55").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
 schedule.every().tuesday.at("9:00").do(_WasteDay,'It is 9:00 on a Waste Treatment Day')
 schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
 schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
