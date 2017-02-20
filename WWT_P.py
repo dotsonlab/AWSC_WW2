@@ -20,27 +20,27 @@ def RunAndLog():
 
         if parsedMessage[0] == 'TANKD:':
             parsedMessage.remove('TANKD:')
-            message = parsedMessage
+            global message = parsedMessage
             TankLevel()
 
         elif parsedMessage[0] == 'PRESSD:':
             parsedMessage.remove('PRESSD:')
-            message = parsedMessage
+            global message = parsedMessage
             Pressure()
 
         elif parsedMessage[0] == 'IFLOWD:':
             parsedMessage.remove('IFLOWD:')
-            message = parsedMessage
+            global message = parsedMessage
             iFlow()
 
         elif parsedMessage[0] == 'TFLOWD:':
             parsedMessage.remove('TFLOWD:')
-            message = parsedMessage
+            global message = parsedMessage
             tFlow()
 
         elif parsedMessage[0] == 'TandPD':
             parsedMessage.remove('TandPD')
-            message = parsedMessage
+            global message = parsedMessage
             TandP()
 
 def TreatmentTimer():
