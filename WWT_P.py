@@ -199,11 +199,11 @@ def _quit():
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
-RegButton = Tk.Button(master=root, text='Regular Day', command=_RegularDay) #the quit button
+RegButton = Tk.Button(master=root, text='Regular Day', command=_RegularDay)
 RegButton.grid(row=0, column=4)
 RegButton.config(height = 2, width = 8)
 
-WasteButton = Tk.Button(master=root, text='Waste Day', command=_WasteDay) #the quit button
+WasteButton = Tk.Button(master=root, text='Waste Day', command=_WasteDay)
 WasteButton.grid(row=1, column=4)
 WasteButton.config(height = 2, width = 8)
 
