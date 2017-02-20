@@ -420,7 +420,63 @@ void valvecheck(){
     } else {wwrinsestatus=2;
       }
 }
-
+void closeallvalves(){
+  digitalWrite(roa, LOW);
+  digitalWrite(rob, LOW);
+  digitalWrite(nfa, LOW);
+  digitalWrite(nfb, LOW);
+  digitalWrite(prefiltvalve, LOW);
+  digitalWrite(waste, LOW);
+  digitalWrite(wwrinse,LOW);
+  checkvalve = false;
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (roastatus ==0){
+      checkvalve = true;
+    }
+  }
+  checkvalve = false;
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (robstatus ==0){
+      checkvalve = true;
+    }
+   }
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (nfastatus ==0){
+      checkvalve = true;
+    }
+  }
+  checkvalve = false;
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (nfbstatus ==0){
+      checkvalve = true;
+    }
+   }
+    checkvalve = false;
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (prefiltstatus ==0){
+      checkvalve = true;
+    }
+   }
+     checkvalve = false;
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (wwrinsestatus ==0){
+      checkvalve = true;
+    }
+   }
+     checkvalve = false;
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (wastestatus ==0){
+      checkvalve = true;
+    }
+   }checkvalve = false;
+}
 void flows(){
   char strng[] ="1:R";
 
@@ -450,19 +506,7 @@ void flows(){
     }}
  }//}
 
-void serialEvent() {   //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
-  if (Serial.available() > 0) {
-    incomingByte = Serial.read();
-    if (incomingByte == 'H') {
-      hppump(1);
-    }
-    if (incomingByte == 'L') {
-      hppump(0);
-    }
-  }
-  //computer_bytes_received = Serial.readBytesUntil(13, computerdata, 20); //We read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received
-  //computerdata[computer_bytes_received] = 0; //We add a 0 to the spot in the array just after the last character we received.. This will stop us from transmitting incorrect data that may have been left in the buffer
-}
+
 
 void pressures(){
   int junk = analogRead(feedppin);
@@ -729,11 +773,12 @@ void waiting(int interval){
   }
 }
 
-void RO(int target, int rinsecycle){
+void RO(int target, int rinsecycle, int wastecycle){
   if (swwtank >= target && sroftank< 5) {//if water needs to be treated
     return;}
     lcd.setCursor(0, 0);
     lcd.print("RO Treatment");
+    closeallvalves();
     checkvalve = false;
     uvdisinfect(1);
     unsigned long warmuptime =millis();
@@ -834,7 +879,48 @@ void RO(int target, int rinsecycle){
     }
 
     hppump(0);
-    rocontrolopen();
+    rocontrolopen();//open plug valve for low pressure rinse
+if (wastecycle ==1){
+    digitalWrite(roa, HIGH);//open tank
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (roastatus ==1){
+    checkvalve = true;
+    }}
+    digitalWrite(rob, LOW); //close membrane
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (robstatus ==0){
+    checkvalve = true;
+    }}
+digitalWrite(waste, HIGH);//open waste
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (wastestatus ==1){
+    checkvalve = true;
+    } }
+  waiting(1);
+      lcd.setCursor(0, 3);
+    lcd.print("wasting RO   ");
+  int wastetime = 10000;//sroftank *4.8*1000;//mseconds to run pump
+  hppump(1);
+  delay(wastetime);//wait for empty
+  hppump(0);
+  delay(1000);
+  digitalWrite(waste, LOW);//tank
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (wastestatus ==0){
+    checkvalve = true;
+    } }
+  
+  
+  }
+    
     digitalWrite(roa, LOW);//tank
     while(checkvalve == false){ //wait for valves to turn
       valvecheck();
@@ -894,12 +980,13 @@ void RO(int target, int rinsecycle){
   lcd.print("RO complete  ");
 }
 
-void NF(int target, int rinsecycle){
+void NF(int target, int rinsecycle, int wastecycle){
   if (sroftank>= target && snfftank< 5) {//if water needs to be treated
     return;}
 
   lcd.setCursor(0, 0);
   lcd.print("NF Treatment");
+  closeallvalves();
   checkvalve = false;
   if (pretankstatus !=0) {
     return;}
@@ -983,7 +1070,59 @@ void NF(int target, int rinsecycle){
     }
   hppump(0);
   nfcontrolopen();
-  digitalWrite(nfa, LOW);//tank
+  //adding waste
+  if (wastecycle ==1){
+    digitalWrite(nfa, HIGH);//tank
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfastatus ==1){
+    checkvalve = true;
+    }}
+    digitalWrite(nfb, LOW);//tank
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfbstatus ==0){
+    checkvalve = true;
+    }}
+digitalWrite(waste, HIGH);//tank
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (wastestatus ==1){
+    checkvalve = true;
+    } }
+  waiting(1);
+      lcd.setCursor(0, 3);
+    lcd.print("wasting NF    ");
+  int wastetime = snfftank *4.8*1000;//mseconds to run pump
+  hppump(1);
+  delay(wastetime);//wait for empty
+  hppump(0);
+  delay(1000);
+  digitalWrite(waste, LOW);//tank
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (wastestatus ==0){
+    checkvalve = true;
+    } }
+  
+  
+  }
+
+  
+  if (rinsecycle==1){
+        digitalWrite(nfb, HIGH);//tank
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfbstatus ==1){
+    checkvalve = true;
+    }
+  }checkvalve = false;
+    digitalWrite(nfa, LOW);//tank
   while(checkvalve == false){
     valvecheck();
     if (nfastatus ==0){
@@ -991,9 +1130,7 @@ void NF(int target, int rinsecycle){
     }
   }
   checkvalve = false;
-
-  if (rinsecycle==1){
-    digitalWrite(wwrinse, HIGH);
+  digitalWrite(wwrinse, HIGH);
     while(checkvalve == false){
       valvecheck();
       if (wwrinsestatus ==1){
@@ -1001,7 +1138,6 @@ void NF(int target, int rinsecycle){
       }
     }
     checkvalve = false;
-
     hppump(1);
     lcd.setCursor(0, 3);
     lcd.print("rinsing    ");
@@ -1047,6 +1183,7 @@ void PRE(int target, int rinsecycle){
   return;}
   lcd.setCursor(0, 0);
   lcd.print("PRE-Treatment");
+  closeallvalves();
   checkvalve = false;
   if (pretankstatus !=0) {
     return;}
@@ -1095,6 +1232,10 @@ void PRE(int target, int rinsecycle){
     lcd.print("total flow: ");lcd.print(flw[4]-PREflows);
     pressures();
     flows();
+    if (sfeedp>90){
+      hppump(0);
+      return;
+      }
   }
 
   hppump(0);
@@ -1180,12 +1321,12 @@ void regularday(){
   fixaverages(10);
   if (systemstate==0){
     treattimes[0]=timnow;
-    RO(80,1);
+    RO(80,1,0);
     fixaverages(10);
   }
   if (systemstate ==3){
     treattimes[1]=timnow;
-    NF(81,1);
+    NF(81,1,0);
     fixaverages(10);
   }
   if (systemstate==2){
@@ -1197,20 +1338,74 @@ void regularday(){
   lcd.setCursor(0, 0);
   lcd.print("Treatment complete  ");
 }
-
+void wasteday(){
+  fixaverages(10);
+  if (systemstate==0){
+    treattimes[0]=timnow;
+    RO(80,1,1);
+    fixaverages(10);
+  }
+  if (systemstate ==3){
+    treattimes[1]=timnow;
+    NF(81,1,1);
+    fixaverages(10);
+  }
+  if (systemstate==2){
+    treattimes[2]=timnow;
+    PRE(81,1);
+    fixaverages(10);
+  }
+  treattimes[3]=timnow;
+  lcd.setCursor(0, 0);
+  lcd.print("Waste created ");
+}
 //******     END FUNCTIONS     ******//
-
+void serialEvent() {   //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
+  if (Serial.available() > 0) {
+    incomingByte = Serial.read();
+    if (incomingByte == 'H') {
+      uvdisinfect(1);//hppump(1);
+    }
+    if (incomingByte == 'L') {
+      uvdisinfect(0);//hppump(0);
+    }
+    if (incomingByte == 'D'){
+      regularday();
+    }
+    if (incomingByte == 'W'){
+      wasteday();
+    }
+    if (incomingByte == 'N'){
+      NF(80,0,0);
+    }
+    if (incomingByte == 'M'){
+      NF(80,1,0);
+    }
+    if (incomingByte == 'R'){
+      RO(80,0,0);
+    }
+    if (incomingByte == 'T'){
+      RO(80,1,0);
+    }
+    if (incomingByte =='C'){
+      PRE(80,0);
+    }
+    if (incomingByte =='V'){
+      PRE(80,1);
+    }
+  }
+}
 //******     BEGIN LOOP     ******//
 void loop() {
-  bubbles(1);
-  waiting(1000);
-  systemstate =1;
-  //RO(80,1);//target then 1 for rinse cycle (put 0 for filling sequence with no rinse)
-  //NF(80,0);
+  //bubbles(1);
+  waiting(1);
+  //systemstate =1;
+  RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
+  //NF(80,0,0);
   //PRE(80,0);
   //flows();
   //regularday();
   //Serial.println("loop");
-  //while(1){};
+  while(1){};
 }
 //******     END LOOP     ******//
