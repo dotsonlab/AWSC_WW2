@@ -44,9 +44,6 @@ def RunAndLog():
             message = parsedMessage
             TandP()
 
-def TreatmentTimer():
-    print "set timer here"
-
 def TankLevel():
     #get current time
 	now=time.localtime(time.time())
@@ -159,11 +156,11 @@ def TandP():
 
 def _RegularDay(t):
     print t, "Regular Day"
-    ser.write('H\n')
+    #ser.write(cmd)
 
 def _WasteDay(t):
     print t, "Waste Day"
-    ser.write('L\n')
+    ser.write('W\n')
 
 def _CartridgeFilter():
     print "Cartridge Filter"
@@ -200,6 +197,7 @@ def _quit():
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
+
 RegButton = Tk.Button(master=root, text='Regular Day', command=_RegularDay)
 RegButton.grid(row=0, column=4)
 RegButton.config(height = 5, width = 16)
@@ -236,8 +234,8 @@ ROWOButton = Tk.Button(master=root, text='RO wo R', command=_ReverseOsmosisWO)
 ROWOButton.grid(row=2, column=2)
 ROWOButton.config(height = 5, width = 16)
 
-schedule.every().monday.at("11:11").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().monday.at("11:12").do(_WasteDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().monday.at("9:00").do(_WasteDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().tuesday.at("9:00").do(_WasteDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().friday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
