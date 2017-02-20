@@ -236,7 +236,7 @@ ROWOButton = Tk.Button(master=root, text='RO wo R', command=_ReverseOsmosisWO)
 ROWOButton.grid(row=2, column=2)
 ROWOButton.config(height = 2, width = 8)
 
-schedule.every().monday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
+schedule.every().monday.at("10:52").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
 schedule.every().tuesday.at("9:00").do(_WasteDay,'It is 9:00 on a Waste Treatment Day')
 schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
 schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
