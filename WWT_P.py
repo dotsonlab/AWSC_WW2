@@ -12,6 +12,7 @@ time.sleep(1)
 
 def RunAndLog():
     while not e.isSet():
+        global message
         schedule.run_pending()
     	message=ser.readline()  #how do we throw away garbled serial transmissions?
     	print(message)
@@ -20,27 +21,27 @@ def RunAndLog():
 
         if parsedMessage[0] == 'TANKD:':
             parsedMessage.remove('TANKD:')
-            global message = parsedMessage
+            message = parsedMessage
             TankLevel()
 
         elif parsedMessage[0] == 'PRESSD:':
             parsedMessage.remove('PRESSD:')
-            global message = parsedMessage
+            message = parsedMessage
             Pressure()
 
         elif parsedMessage[0] == 'IFLOWD:':
             parsedMessage.remove('IFLOWD:')
-            global message = parsedMessage
+            message = parsedMessage
             iFlow()
 
         elif parsedMessage[0] == 'TFLOWD:':
             parsedMessage.remove('TFLOWD:')
-            global message = parsedMessage
+            message = parsedMessage
             tFlow()
 
         elif parsedMessage[0] == 'TandPD':
             parsedMessage.remove('TandPD')
-            global message = parsedMessage
+            message = parsedMessage
             TandP()
 
 def TreatmentTimer():
