@@ -158,7 +158,7 @@ def TandP():
 	file.close()
 
 def _RegularDay(t):
-    print "Regular Day Treatment"
+    print t, "Regular Day Treatment"
     #ser.write(cmd)
 
 def _WasteDay(t):
@@ -236,7 +236,7 @@ ROWOButton = Tk.Button(master=root, text='RO wo R', command=_ReverseOsmosisWO)
 ROWOButton.grid(row=2, column=2)
 ROWOButton.config(height = 5, width = 16)
 
-schedule.every().monday.at("10:55").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
+schedule.every().monday.at("11:04").do(_RegularDay,'It is 9:00 on scheduled ')
 schedule.every().tuesday.at("9:00").do(_WasteDay,'It is 9:00 on a Waste Treatment Day')
 schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
 schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
