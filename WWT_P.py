@@ -44,9 +44,6 @@ def RunAndLog():
             message = parsedMessage
             TandP()
 
-        elif parsedMessage[0] == 'Connected':
-            print "Raspberry Pi Ready"
-
 def TreatmentTimer():
     print "set timer here"
 
