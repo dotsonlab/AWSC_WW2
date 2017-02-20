@@ -167,11 +167,11 @@ def _WasteDay():
 
 def _CartridgeFilter():
     print "Cartridge Filter"
-    #ser.write(cmd)
+    ser.write('H\n')
 
 def _CartridgeFilterWO():
     print "Cartridge Filter with Rinse"
-    #ser.write(cmd)
+    ser.write('L\n')
 
 def _Nanofilter():
     print "Nanofilter"
