@@ -158,20 +158,20 @@ def TandP():
 	file.close()
 
 def _RegularDay(t):
-    print t, "Regular Day Treatment"
-    #ser.write(cmd)
+    print t, "Regular Day"
+    ser.write('H\n')
 
 def _WasteDay(t):
-    print "Waste Day Treatment"
-    #ser.write(cmd)
+    print t, "Waste Day"
+    ser.write('L\n')
 
 def _CartridgeFilter():
     print "Cartridge Filter"
-    ser.write('H\n')
+    #ser.write(cmd)
 
 def _CartridgeFilterWO():
     print "Cartridge Filter with Rinse"
-    ser.write('L\n')
+    #ser.write(cmd)
 
 def _Nanofilter():
     print "Nanofilter"
@@ -236,13 +236,13 @@ ROWOButton = Tk.Button(master=root, text='RO wo R', command=_ReverseOsmosisWO)
 ROWOButton.grid(row=2, column=2)
 ROWOButton.config(height = 5, width = 16)
 
-schedule.every().monday.at("11:04").do(_RegularDay,'It is 9:00 on scheduled ')
-schedule.every().tuesday.at("9:00").do(_WasteDay,'It is 9:00 on a Waste Treatment Day')
-schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
-schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
-schedule.every().friday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
-schedule.every().saturday.at("20:23").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
-schedule.every().sunday.at("9:00").do(_RegularDay,'It is 9:00 on a Regular Treatment Day')
+schedule.every().monday.at("11:11").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().monday.at("11:12").do(_WasteDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().friday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().saturday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().sunday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 
 thread = threading.Thread(target=RunAndLog, args=())
 e = threading.Event()
