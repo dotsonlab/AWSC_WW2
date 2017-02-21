@@ -49,7 +49,7 @@ def waitForArduino():
     	message=ser.readline()  #how do we throw away garbled serial transmissions?
     	print(message)
 
-        if message == 'Arduino ready':
+        if message == 'ready':
             print 'Raspberry Pi Ready'
 
 def TankLevel():
