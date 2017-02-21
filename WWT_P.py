@@ -7,10 +7,17 @@ import sys
 import os.path
 
 ser=serial.Serial('/dev/ttyACM0',9600)
-time.sleep(1)
+
+waitForArduino()
+
+print "Arduino is ready"
 
 
 def RunAndLog():
+    waitForArduino()
+
+    print "Arduino is ready"
+
     while not e.isSet():
         global message
         schedule.run_pending()
@@ -44,8 +51,24 @@ def RunAndLog():
             message = parsedMessage
             TandP()
 
-def TreatmentTimer():
-    print "set timer here"
+def waitForArduino():
+
+   # wait until the Arduino sends 'Arduino Ready' - allows time for Arduino reset
+   # it also ensures that any bytes left over from a previous message are discarded
+
+    global endMarker
+
+    msg = ""
+    while msg.find("Arduino Ready") == -1:
+
+      while ser.inWaiting() == 0:
+        x = 'z'
+
+      # then wait until an end marker is received from the Arduino to make sure it is ready to proceed
+      x = "z"
+      while ord(x) != endMarker: # gets the initial debugMessage
+        x = ser.read()
+        msg = msg + x
 
 def TankLevel():
     #get current time
