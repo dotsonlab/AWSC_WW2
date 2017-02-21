@@ -8,11 +8,6 @@ import os.path
 
 ser=serial.Serial('/dev/ttyACM0',9600)
 
-waitForArduino()
-
-print "Arduino is ready"
-
-
 def RunAndLog():
     waitForArduino()
 
