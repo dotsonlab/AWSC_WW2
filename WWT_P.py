@@ -42,15 +42,15 @@ def RunAndLog():
             message = parsedMessage
             TandP()
 
-def waitForArduino():
-    while True:
-        global message
-        schedule.run_pending()
-    	message=ser.readline()  #how do we throw away garbled serial transmissions?
-    	print(message)
-
-        if message == 'ready\n':
-            print 'Raspberry Pi Ready'
+# def waitForArduino():
+#     while True:
+#         global message
+#         schedule.run_pending()
+#     	message=ser.readline()  #how do we throw away garbled serial transmissions?
+#     	print(message)
+#
+#         if message == 'ready\n':
+#             print 'Raspberry Pi Ready'
 
 def TankLevel():
     #get current time
@@ -201,7 +201,7 @@ def _quit():
     root.quit()
     root.destroy()
 
-waitForArduino()
+#waitForArduino()
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
