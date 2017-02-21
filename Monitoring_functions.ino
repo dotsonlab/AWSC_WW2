@@ -731,6 +731,14 @@ if (systemstate ==1){
   delay(20000);
   o3pump(0);
 } }}
+
+void bubbleonoff(){
+  if (spretank<10){
+    bubbles(0);
+  }
+  else {bubbles(1);}
+}
+
 void waiting(unsigned long interval){//function to read and report everything at given intervals
   t= millis();
   if (t-oldt > interval){
@@ -745,6 +753,7 @@ void waiting(unsigned long interval){//function to read and report everything at
     timenow();
     printdata();
     o3calc();//also check on ozone timer to see if it needs to be turned on or not
+    bubbleonoff();
   }
 }
 
@@ -1376,15 +1385,12 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 }
 //******     BEGIN LOOP     ******//
 void loop() {
-  //bubbles(1);
   waiting(60000);//sending serial data
   //systemstate =1;
   //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
   //NF(50,1,1);
   //PRE(80,0);
-  //flows();
   //regularday();
-  //Serial.println("loop");
   //while(1){};
 }
 //******     END LOOP     ******//
