@@ -7,6 +7,7 @@ import sys
 import os.path
 
 ser=serial.Serial('/dev/ttyACM0',9600)
+endMarker = 255
 
 def RunAndLog():
     waitForArduino()
