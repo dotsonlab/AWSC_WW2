@@ -6,7 +6,7 @@ import serial
 import sys
 import os.path
 
-ser=serial.Serial('/dev/ttyACM0',9600)
+ser=serial.Serial('/dev/ttyACM0',9600, timeout = 5)
 
 def RunAndLog():
     while not e.isSet():
