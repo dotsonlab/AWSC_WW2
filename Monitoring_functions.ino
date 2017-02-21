@@ -258,7 +258,7 @@ void setup() {
   spotnf= analogRead(nfpotpin);
   digitalWrite(pump,LOW);//ensure pin is not floating
   delay(5000);
-  waiting(1);
+  Serial.println("ready");//waiting(1);
 }
 
 //******     BEGIN FUNCTIONS     ******//
@@ -729,7 +729,7 @@ if (systemstate ==1){
   delay(60000);
   o3pump(0);
 } }}
-void waiting(int interval){//function to read and report everything at given intervals
+void waiting(unsigned long interval){//function to read and report everything at given intervals
   t= millis();
   if (t-oldt > interval){
     oldt=t;
