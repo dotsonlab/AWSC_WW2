@@ -9,10 +9,12 @@ import os.path
 ser=serial.Serial('/dev/ttyACM0',9600)
 endMarker = 255
 
-def RunAndLog():
-    waitForArduino()
+waitForArduino()
 
-    print "Arduino is ready"
+print "Arduino is ready"
+
+def RunAndLog():
+
 
     while not e.isSet():
         global message
