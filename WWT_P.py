@@ -7,12 +7,8 @@ import sys
 import os.path
 
 ser=serial.Serial('/dev/ttyACM0',9600)
-endMarker = 255
-
 
 def RunAndLog():
-
-
     while not e.isSet():
         global message
         schedule.run_pending()
@@ -47,23 +43,14 @@ def RunAndLog():
             TandP()
 
 def waitForArduino():
+    while True:
+        global message
+        schedule.run_pending()
+    	message=ser.readline()  #how do we throw away garbled serial transmissions?
+    	print(message)
 
-   # wait until the Arduino sends 'Arduino Ready' - allows time for Arduino reset
-   # it also ensures that any bytes left over from a previous message are discarded
-
-    global endMarker
-
-    msg = ""
-    while msg.find("Arduino Ready") == -1:
-
-      while ser.inWaiting() == 0:
-        x = 'z'
-
-      # then wait until an end marker is received from the Arduino to make sure it is ready to proceed
-      x = "z"
-      while ord(x) != endMarker: # gets the initial debugMessage
-        x = ser.read()
-        msg = msg + x
+        if message == 'Arduino ready':
+            print 'Raspberry Pi Ready'
 
 def TankLevel():
     #get current time
@@ -215,9 +202,6 @@ def _quit():
     root.destroy()
 
 waitForArduino()
-
-print "Arduino is ready"
-
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
