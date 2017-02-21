@@ -164,7 +164,7 @@ def TandP():
 
 def _RegularDay(t):
     print t, "Regular Day"
-    #ser.write(cmd)
+    ser.write('D\n')
 
 def _WasteDay(t):
     print t, "Waste Day"
