@@ -6,7 +6,7 @@ import serial
 import sys
 import os.path
 
-ser=serial.Serial('/dev/ttyACM0',9600, timeout = 5)
+ser=serial.Serial('/dev/ttyACM0',9600)
 
 def RunAndLog():
     while not e.isSet():
@@ -41,16 +41,6 @@ def RunAndLog():
             parsedMessage.remove('TandPD')
             message = parsedMessage
             TandP()
-
-# def waitForArduino():
-#     while True:
-#         global message
-#         schedule.run_pending()
-#     	message=ser.readline()  #how do we throw away garbled serial transmissions?
-#     	print(message)
-#
-#         if message == 'ready\n':
-#             print 'Raspberry Pi Ready'
 
 def TankLevel():
     #get current time
@@ -172,27 +162,27 @@ def _WasteDay(t):
 
 def _CartridgeFilter():
     print "Cartridge Filter"
-    #ser.write(cmd)
+    ser.write('C\n')
 
 def _CartridgeFilterWO():
     print "Cartridge Filter with Rinse"
-    #ser.write(cmd)
+    ser.write('V\n')
 
 def _Nanofilter():
     print "Nanofilter"
-    #ser.write(cmd)
+    ser.write('N\n')
 
 def _NanofilterWO():
     print "Nanofilter without Rinse"
-    #ser.write(cmd)
+    ser.write('M\n')
 
 def _ReverseOsmosis():
     print "Reverse Osmosis"
-    #ser.write(cmd)
+    ser.write('R\n')
 
 def _ReverseOsmosisWO():
     print "Reverse Osmosis without Rinse"
-    #ser.write(cmd)
+    ser.write('T\n')
 
 def _quit():
     print 'Exiting...'
@@ -200,8 +190,6 @@ def _quit():
     thread.join() #wait for the thread to finish
     root.quit()
     root.destroy()
-
-#waitForArduino()
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
