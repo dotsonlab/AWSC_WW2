@@ -249,7 +249,7 @@ void setup() {
    junk = analogRead(preftankpin);
   spretank = analogRead(preftankpin)*0.668388-146.32479;
    junk = analogRead(wwtankpin);
-  swwtank = analogRead(wwtankpin)*0.65284-134.907;
+  swwtank = analogRead(wwtankpin)*0.65375348-134.42675;
    junk = analogRead(wastetankpin);
   swastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
    junk = analogRead(ropotpin);
@@ -631,7 +631,7 @@ void tanklevel(){//read and average tank levels for all 5 tanks
   float pretank = analogRead(preftankpin)*0.668388-146.32479;
 
   junk = analogRead(wwtankpin);
-  float wwtank = analogRead(wwtankpin)*0.65284-134.907;
+  float wwtank = analogRead(wwtankpin)*0.65375348-134.42675;
 
   junk = analogRead(wastetankpin);
   float wastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
@@ -726,9 +726,19 @@ if (systemstate ==1){
 
   if (t - o3starttime >= o3time && ozonestatus ==1){
   o3(0);
-  delay(60000);
+  delay(20000);
+  delay(20000);
+  delay(20000);
   o3pump(0);
 } }}
+
+void bubbleonoff(){
+  if (spretank<10){
+    bubbles(0);
+  }
+  else {bubbles(1);}
+}
+
 void waiting(unsigned long interval){//function to read and report everything at given intervals
   t= millis();
   if (t-oldt > interval){
@@ -743,6 +753,7 @@ void waiting(unsigned long interval){//function to read and report everything at
     timenow();
     printdata();
     o3calc();//also check on ozone timer to see if it needs to be turned on or not
+    bubbleonoff();
   }
 }
 
@@ -1202,7 +1213,7 @@ void PRE(int target, int rinsecycle){
   waiting(1);
   bw = millis();
   float PREflows=flw[4];
-  while (snfftank< target && spretank> 5){
+  while (snfftank< target && spretank> 7){
     //Serial.print(flowtarget);Serial.print("  "); Serial.println(flw[4]-PREflows);
     waiting(10000);
     lcd.setCursor(0, 3);
@@ -1374,15 +1385,12 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 }
 //******     BEGIN LOOP     ******//
 void loop() {
-  //bubbles(1);
   waiting(60000);//sending serial data
   //systemstate =1;
   //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
   //NF(50,1,1);
   //PRE(80,0);
-  //flows();
   //regularday();
-  //Serial.println("loop");
   //while(1){};
 }
 //******     END LOOP     ******//
