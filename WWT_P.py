@@ -42,6 +42,87 @@ def RunAndLog():
             message = parsedMessage
             TandP()
 
+        elif parsedMessage[0] == 'RelayD':
+            parsedMessage.remove('RelayD')
+            message = parsedMessage
+            Relays()
+
+        elif parsedMessage[0] == '1valveD':
+            parsedMessage.remove('1valveD')
+            message = parsedMessage
+            Valves1()
+
+        elif parsedMessage[0] == '2valveD':
+            parsedMessage.remove('2valveD')
+            message = parsedMessage
+            Valves2()
+
+def Relays():
+    #get current time
+	now=time.localtime(time.time())
+	currentmonth=now.tm_mon
+	currentday=now.tm_mday
+	currentyear=now.tm_year
+	filename = "{0}_{1}_{2}_WWT-Relays.txt".format(currentyear, currentmonth, currentday)
+
+        if not (os.path.isfile(filename)):
+            file=open(filename,"w")
+            file.write("P\tBUB\tO3\tO3pump\tUV\ttime")
+            file.flush()
+            file.close()
+
+    #open file and save serial data from arduino
+	file=open(filename,"a")
+	#message=ser.readline()
+	print('\t'.join(message))
+	file.write('\t'.join(message))
+	file.flush()
+	file.close()
+
+def Valves1():
+    #get current time
+	now=time.localtime(time.time())
+	currentmonth=now.tm_mon
+	currentday=now.tm_mday
+	currentyear=now.tm_year
+	filename = "{0}_{1}_{2}_WWT-Valves1.txt".format(currentyear, currentmonth, currentday)
+
+        if not (os.path.isfile(filename)):
+            file=open(filename,"w")
+            file.write("NFPOT\tNFF\tNFFT\tGW\tCFF\ttime")
+            file.flush()
+            file.close()
+
+    #open file and save serial data from arduino
+	file=open(filename,"a")
+	#message=ser.readline()
+	print('\t'.join(message))
+	file.write('\t'.join(message))
+	file.flush()
+	file.close()
+
+def Valves2():
+    #get current time
+	now=time.localtime(time.time())
+	currentmonth=now.tm_mon
+	currentday=now.tm_mday
+	currentyear=now.tm_year
+	filename = "{0}_{1}_{2}_WWT-Valves2.txt".format(currentyear, currentmonth, currentday)
+
+        if not (os.path.isfile(filename)):
+            file=open(filename,"w")
+            file.write("ROPOT\tROF\tROFT\tWWT\tWASTE\ttime")
+            file.flush()
+            file.close()
+
+    #open file and save serial data from arduino
+	file=open(filename,"a")
+	#message=ser.readline()
+	print('\t'.join(message))
+	file.write('\t'.join(message))
+	file.flush()
+	file.close()
+
 def TankLevel():
     #get current time
 	now=time.localtime(time.time())
