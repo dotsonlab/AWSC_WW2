@@ -4,8 +4,6 @@ __version__ = "1.0"
 __maintainer__ = "Cody Giles"
 __status__ = "Production"
 
-__minor modifications author__ = 'Aaron Dotson'
-
 import subprocess
 import smtplib
 from email.mime.text import MIMEText
