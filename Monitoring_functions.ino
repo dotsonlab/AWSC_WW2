@@ -816,7 +816,7 @@ void RO(int target, int rinsecycle, int wastecycle){
   hppump(1);
   pressures();
 
-  while (swwtank< target && sroftank> 5){//treat as long as tank not too full or empty
+  while (swwtank< target && sroftank> 7){//treat as long as tank not too full or empty
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("productflow: ");lcd.print(flw[7]);
@@ -1016,7 +1016,7 @@ void NF(int target, int rinsecycle, int wastecycle){//determine if need to run r
   hppump(1);
   pressures();
 
-  while (sroftank< target && snfftank> 5){//(swwtank< 80 && sroftank> 5){
+  while (sroftank< target && snfftank> 7){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("productflow: ");lcd.print(flw[9]);//display product flow on lcd screen
