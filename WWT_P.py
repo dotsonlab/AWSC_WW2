@@ -251,19 +251,19 @@ def _CartridgeFilterWO():
 
 def _Nanofilter():
     print "Nanofilter"
-    ser.write('N\n')
+    ser.write('M\n')
 
 def _NanofilterWO():
     print "Nanofilter without Rinse"
-    ser.write('M\n')
+    ser.write('N\n')
 
 def _ReverseOsmosis():
     print "Reverse Osmosis"
-    ser.write('R\n')
+    ser.write('T\n')
 
 def _ReverseOsmosisWO():
     print "Reverse Osmosis without Rinse"
-    ser.write('T\n')
+    ser.write('R\n')
 
 def _quit():
     print 'Exiting...'
