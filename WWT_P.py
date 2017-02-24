@@ -67,7 +67,7 @@ def Relays():
 
         if not (os.path.isfile(filename)):
             file=open(filename,"w")
-            file.write("P\tBUB\tO3\tO3pump\tUV\ttime")
+            file.write("P\tBUB\tO3\tO3pump\tUV\ttime\n")
             file.flush()
             file.close()
 
@@ -89,7 +89,7 @@ def Valves1():
 
         if not (os.path.isfile(filename)):
             file=open(filename,"w")
-            file.write("NFPOT\tNFF\tNFFT\tGW\tCFF\ttime")
+            file.write("NFPOT\tNFF\tNFFT\tGW\tCFF\ttime\n")
             file.flush()
             file.close()
 
@@ -111,7 +111,7 @@ def Valves2():
 
         if not (os.path.isfile(filename)):
             file=open(filename,"w")
-            file.write("ROPOT\tROF\tROFT\tWWT\tWASTE\ttime")
+            file.write("ROPOT\tROF\tROFT\tWWT\tWASTE\ttime\n")
             file.flush()
             file.close()
 
