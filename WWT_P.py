@@ -274,7 +274,7 @@ def _quit():
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
-RegButton = Tk.Button(master=root, text='Regular Day', command=(_RegularDay,'MANUAL ACTIVATED:')
+RegButton = Tk.Button(master=root, text='Regular Day', command=(_RegularDay,'MANUAL ACTIVATED:'))
 RegButton.grid(row=0, column=4)
 RegButton.config(height = 5, width = 16)
 
