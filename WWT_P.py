@@ -274,11 +274,11 @@ def _quit():
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
-RegButton = Tk.Button(master=root, text='Regular Day', command=_RegularDay)
+RegButton = Tk.Button(master=root, text='Regular Day', command=(_RegularDay,'MANUAL ACTIVATED:')
 RegButton.grid(row=0, column=4)
 RegButton.config(height = 5, width = 16)
 
-WasteButton = Tk.Button(master=root, text='Waste Day', command=_WasteDay)
+WasteButton = Tk.Button(master=root, text='Waste Day', command=(_WasteDay,'MANUALLY ACTIVATED'))
 WasteButton.grid(row=1, column=4)
 WasteButton.config(height = 5, width = 16)
 
@@ -314,7 +314,7 @@ schedule.every().monday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treat
 schedule.every().tuesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().friday.at("9:58").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().friday.at("10:09").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().saturday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().sunday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 
