@@ -13,7 +13,7 @@ def RunAndLog():
         global message
         schedule.run_pending()
     	message=ser.readline()  #how do we throw away garbled serial transmissions?
-    	print(message)
+    	#print(message)
 
         parsedMessage = message.split('\t')
 
@@ -74,7 +74,7 @@ def Relays():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -96,7 +96,7 @@ def Valves1():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -118,7 +118,7 @@ def Valves2():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -140,7 +140,7 @@ def TankLevel():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -162,7 +162,7 @@ def Pressure():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -184,7 +184,7 @@ def iFlow():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -206,7 +206,7 @@ def tFlow():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -228,7 +228,7 @@ def TandP():
     #open file and save serial data from arduino
 	file=open(filename,"a")
 	#message=ser.readline()
-	print('\t'.join(message))
+	#print('\t'.join(message))
 	file.write('\t'.join(message))
 	file.flush()
 	file.close()
@@ -274,11 +274,11 @@ def _quit():
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
-RegButton = Tk.Button(master=root, text='Regular Day', command=_RegularDay('MANUAL ACTIVATED'))
+RegButton = Tk.Button(master=root, text='Regular Day', command=_RegularDay)
 RegButton.grid(row=0, column=4)
 RegButton.config(height = 5, width = 16)
 
-WasteButton = Tk.Button(master=root, text='Waste Day', command=_WasteDay('MANUAL ACTIVATED'))
+WasteButton = Tk.Button(master=root, text='Waste Day', command=_WasteDay)
 WasteButton.grid(row=1, column=4)
 WasteButton.config(height = 5, width = 16)
 
