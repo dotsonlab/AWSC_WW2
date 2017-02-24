@@ -52,7 +52,7 @@ int sprefiltp2 = 0;
 float spretank= 0;
 float swastetank = 0;
 boolean checkvalve = false;
-int systemstate=0;
+int systemstate=1;
 unsigned long timnow;
 unsigned long treattimes[3];
 //initial 12v actuated ball valve status
@@ -1314,6 +1314,7 @@ void fixaverages(int number){//takes 10 readings to stabalize values
 
 void regularday(){
   fixaverages(10);
+  systemstate=0;
   if (systemstate==0){
     treattimes[0]=timnow;
     RO(80,1,0);//ro treatment no waste cycle
@@ -1335,6 +1336,7 @@ void regularday(){
 }
 void wasteday(){
   fixaverages(10);
+  systemstate=0;
   if (systemstate==0){
     treattimes[0]=timnow;
     RO(80,1,1);//ro treatment cycle
