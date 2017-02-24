@@ -5,6 +5,7 @@ import Tkinter as Tk
 import serial
 import sys
 import os.path
+from functools import partial
 
 ser=serial.Serial('/dev/ttyACM0',9600)
 
@@ -274,11 +275,11 @@ def _quit():
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
-RegButton = Tk.Button(master=root, text='Regular Day', command=(_RegularDay,'MANUAL ACTIVATED:'))
+RegButton = Tk.Button(master=root, text='Regular Day', command=partial(_RegularDay,'MANUAL ACTIVATED: '))
 RegButton.grid(row=0, column=4)
 RegButton.config(height = 5, width = 16)
 
-WasteButton = Tk.Button(master=root, text='Waste Day', command=(_WasteDay,'MANUALLY ACTIVATED'))
+WasteButton = Tk.Button(master=root, text='Waste Day', command=partial(_WasteDay,'MANUALLY ACTIVATED: '))
 WasteButton.grid(row=1, column=4)
 WasteButton.config(height = 5, width = 16)
 
