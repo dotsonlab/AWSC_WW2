@@ -246,7 +246,7 @@ def _CartridgeFilter():
     ser.write('V\n')
 
 def _CartridgeFilterWO():
-    print "Cartridge Filter with Rinse"
+    print "Cartridge Filter without Rinse"
     ser.write('C\n')
 
 def _Nanofilter():
