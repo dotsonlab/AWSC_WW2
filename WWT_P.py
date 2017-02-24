@@ -314,7 +314,7 @@ schedule.every().monday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treat
 schedule.every().tuesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().friday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().friday.at("9:58").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().saturday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().sunday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
 
