@@ -1160,7 +1160,14 @@ digitalWrite(waste, HIGH);//valve open
     }
   }
   checkvalve = false;
-
+digitalWrite(nfa, LOW);
+  while(checkvalve == false){ //wait for drain and vent valves to be closed
+    valvecheck();
+    if (nfastatus ==0){
+      checkvalve = true;
+    }
+  }
+  checkvalve = false;
   waiting(1);
   systemstate=2;
   lcd.setCursor(0, 3);
@@ -1386,7 +1393,7 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 //******     BEGIN LOOP     ******//
 void loop() {
   waiting(60000);//sending serial data
-  //systemstate =1;
+  systemstate =1;
   //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
   //NF(50,1,1);
   //PRE(80,0);
