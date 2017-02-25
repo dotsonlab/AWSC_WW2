@@ -2,6 +2,7 @@ import time
 import schedule  #will have to pip install schedule (library)
 import threading
 import Tkinter as Tk
+import tkMessageBox
 import serial
 import sys
 import os.path
@@ -235,43 +236,79 @@ def TandP():
 	file.close()
 
 def _RegularDay(t):
-    print t, "Regular Day"
-    ser.write('D\n')
+    result = tkMessageBox.askquestion("Regular Treatment Day Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print t, "Regular Day"
+        ser.write('D\n')
+    else:
+        print "Regular Day Treatment Canceled"
 
 def _WasteDay(t):
-    print t, "Waste Day"
-    ser.write('W\n')
+    result = tkMessageBox.askquestion("Waste Treatment Day Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print t, "Waste Day"
+        ser.write('W\n')
+    else:
+        print "Waste Day Treatment Canceled"
 
 def _CartridgeFilter():
-    print "Cartridge Filter"
-    ser.write('V\n')
+    result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print "Cartridge Filter"
+        ser.write('V\n')
+    else:
+        print "Cartridge Filter Treatment Step Canceled"
 
 def _CartridgeFilterWO():
-    print "Cartridge Filter without Rinse"
-    ser.write('C\n')
+    result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print "Cartridge Filter without Rinse"
+        ser.write('C\n')
+    else:
+        print "Cartridge Filter without Rinse Treatment Step Canceled"
 
 def _Nanofilter():
-    print "Nanofilter"
-    ser.write('M\n')
+    result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print "Nanofilter"
+        ser.write('M\n')
+    else:
+        print "Nanofilter Treatment Step Canceled"
 
 def _NanofilterWO():
-    print "Nanofilter without Rinse"
-    ser.write('N\n')
+    result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print "Nanofilter without Rinse"
+        ser.write('N\n')
+    else:
+        print "Nanofilter without Rinse Treatment Step Canceled"
 
 def _ReverseOsmosis():
-    print "Reverse Osmosis"
-    ser.write('T\n')
+    result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print "Reverse Osmosis"
+        ser.write('T\n')
+    else:
+        print "Reverse Osomosis Treatment Step Canceled"
 
 def _ReverseOsmosisWO():
-    print "Reverse Osmosis without Rinse"
-    ser.write('R\n')
+    result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
+    if result=='yes':
+        print "Reverse Osmosis without Rinse"
+        ser.write('R\n')
+    else:
+        print "Reverse Osmosis without Rinse Treatment Step Canceled"
 
 def _quit():
-    print 'Exiting...'
-    e.set()
-    thread.join() #wait for the thread to finish
-    root.quit()
-    root.destroy()
+    result = tkMessageBox.askquestion("Exit WWT Interface Confirmation", "Are you sure you want to quit?", icon='warning')
+    if result=='yes':
+        print 'Exiting...'
+        e.set()
+        thread.join() #wait for the thread to finish
+        root.quit()
+        root.destroy()
+    else:
+        print "Quit Program Canceled"
 
 root = Tk.Tk()
 root.wm_title("WWT Control")
