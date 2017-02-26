@@ -3,18 +3,20 @@
 import csv
 import datetime as dt
 import matplotlib
-
-import matplotlib.pyplot as plt
-import matplotlib.dates as md
-
 # uncomment when on lab server
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from datetime import date, timedelta, datetime
 import os
 
+
+import matplotlib.pyplot as plt
+import matplotlib.dates as md
+
+
+
 # uncomment when on lab server
-os.chdir('/Users/addotson/Desktop/python/data/')
+os.chdir('/home/addotson/AWSC_scripts/WWT_daily')
 
 today = date.today() - timedelta(days=1)
 year = today.year
@@ -23,11 +25,10 @@ day = today.day
 
 # lab server working directory /home/addotson/data_AWSC/
 
-filename1 = "/Users/addotson/Desktop/python/data/{0}_{1}_{2}_WWT-Pressure".format(year, month, day)
-filename2 = "/Users/addotson/Desktop/python/data/{0}_{1}_{2}_WWT-TandPD".format(year, month, day)
-filename3 = "/Users/addotson/Desktop/python/data/{0}_{1}_{2}_WWT-TankLevels".format(year, month, day)
-filename4 = "/Users/addotson/Desktop/python/data/{0}_{1}_{2}_WWT-iFlow".format(year, month, day)
-filename5 = "/Users/addotson/Desktop/python/data/{0}_{1}_{2}_WWT-tFlow".format(year, month, day)
+filename1 = "/home/addotson/data_AWSC/raw/{0}_{1}_{2}_WWT-Pressure".format(year, month, day)
+filename2 = "/home/addotson/data_AWSC/raw/{0}_{1}_{2}_WWT-TandPD".format(year, month, day)
+filename3 = "/home/addotson/data_AWSC/raw/{0}_{1}_{2}_WWT-TankLevels".format(year, month, day)
+filename4 = "/home/addotson/data_AWSC/raw/{0}_{1}_{2}_WWT-iFlow".format(year, month, day)
 
 ####plots pressure
 x,y = [],[]
@@ -77,7 +78,7 @@ for label in legend.get_lines():
     label.set_linewidth(1.5)  # the legend line width
 
 plt.savefig(filename1+".png")
-plt.show()
+#plt.show()
 
 ####plots temp
 x,y = [],[]
@@ -121,7 +122,7 @@ for label in legend.get_lines():
     label.set_linewidth(1.5)  # the legend line width
 
 plt.savefig(filename2+"-T.png")
-plt.show()
+#plt.show()
 
 
 ####plots power
@@ -163,9 +164,7 @@ for label in legend.get_lines():
     label.set_linewidth(1.5)  # the legend line width
 
 plt.savefig(filename2+"-P.png")
-plt.show()
-
-
+#plt.show()
 
 ####plots Tank Levels
 x,y = [],[]
@@ -215,7 +214,7 @@ for label in legend.get_lines():
     label.set_linewidth(1.5)  # the legend line width
 
 plt.savefig(filename3+".png")
-plt.show()
+#plt.show()
 
 ####plots instantaneous flows
 x,y = [],[]
@@ -265,7 +264,7 @@ for label in legend.get_lines():
     label.set_linewidth(1.5)  # the legend line width
 
 plt.savefig(filename4+".png")
-plt.show()
+#plt.show()
 
 #
 # #### make figure pair
