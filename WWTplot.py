@@ -49,11 +49,11 @@ for line in csv_reader1:
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(y,x,'ro',label='F',markeredgewidth=0.0)
-ax.plot(y,x1,'bo',label='C1',markeredgewidth=0.0)
-ax.plot(y,x2,'go',label='C2',markeredgewidth=0.0)
-ax.plot(y,x3,'co',label='NFR',markeredgewidth=0.0)
-ax.plot(y,x4,'mo',label='ROR',markeredgewidth=0.0)
+ax.plot(y,x,'ro',label='F',markeredgewidth=0.1)
+ax.plot(y,x1,'bo',label='C1',markeredgewidth=0.1)
+ax.plot(y,x2,'go',label='C2',markeredgewidth=0.1)
+ax.plot(y,x3,'co',label='NFR',markeredgewidth=0.1)
+ax.plot(y,x4,'mo',label='ROR',markeredgewidth=0.1)
 
 xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
 plt.xticks( rotation=25 )
@@ -95,9 +95,9 @@ for line in csv_reader2:
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(y,x,'ro',label='OUT', markeredgewidth=0.0)
-ax.plot(y,x1,'bo',label='AC', markeredgewidth=0.0)
-ax.plot(y,x2,'go',label='DC', markeredgewidth=0.0)
+ax.plot(y,x,'ro',label='OUT', markeredgewidth=0.1)
+ax.plot(y,x1,'bo',label='AC', markeredgewidth=0.1)
+ax.plot(y,x2,'go',label='DC', markeredgewidth=0.1)
 
 xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
 plt.xticks( rotation=25 )
@@ -138,8 +138,8 @@ for line in csv_reader2:
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(y,x3,'co',label='PWRA',markeredgewidth=0.0)
-ax.plot(y,x4,'mo',label='PWRB',markeredgewidth=0.0)
+ax.plot(y,x3,'co',label='PWRA',markeredgewidth=0.1)
+ax.plot(y,x4,'mo',label='PWRB',markeredgewidth=0.1)
 
 xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
 plt.xticks( rotation=25 )
@@ -185,11 +185,11 @@ for line in csv_reader3:
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(y,x,'ro',label='WW',markeredgewidth=0.0)
-ax.plot(y,x1,'bo',label='ROF',markeredgewidth=0.0)
-ax.plot(y,x2,'go',label='NFF',markeredgewidth=0.0)
-ax.plot(y,x3,'co',label='GW',markeredgewidth=0.0)
-ax.plot(y,x4,'mo',label='Waste',markeredgewidth=0.0)
+ax.plot(y,x,'ro',label='WW',markeredgewidth=0.1)
+ax.plot(y,x1,'bo',label='ROF',markeredgewidth=0.1)
+ax.plot(y,x2,'go',label='NFF',markeredgewidth=0.1)
+ax.plot(y,x3,'co',label='GW',markeredgewidth=0.1)
+ax.plot(y,x4,'mo',label='Waste',markeredgewidth=0.1)
 
 xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
 plt.xticks( rotation=25 )
@@ -235,11 +235,11 @@ for line in csv_reader4:
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(y,x,'ro',label='C',markeredgewidth=0.0)
-ax.plot(y,x1,'bo',label='NFP',markeredgewidth=0.0)
-ax.plot(y,x2,'go',label='NFR',markeredgewidth=0.0)
-ax.plot(y,x3,'co',label='ROP',markeredgewidth=0.0)
-ax.plot(y,x4,'mo',label='ROR',markeredgewidth=0.0)
+ax.plot(y,x,'ro',label='C',markeredgewidth=0.1)
+ax.plot(y,x1,'bo',label='NFP',markeredgewidth=0.1)
+ax.plot(y,x2,'go',label='NFR',markeredgewidth=0.1)
+ax.plot(y,x3,'co',label='ROP',markeredgewidth=0.1)
+ax.plot(y,x4,'mo',label='ROR',markeredgewidth=0.1)
 
 xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
 plt.xticks( rotation=25 )
