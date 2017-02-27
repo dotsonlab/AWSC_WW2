@@ -733,7 +733,7 @@ if (systemstate ==1){
 } }}
 
 void bubbleonoff(){
-  if (spretank<10){
+  if (spretank<7){
     bubbles(0);
   }
   else {bubbles(1);}
