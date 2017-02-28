@@ -235,6 +235,14 @@ def TandP():
 	file.flush()
 	file.close()
 
+def _RegularDayA(t):
+	print t, "Regular Day"
+	ser.write('D\n')
+
+def _WasteDayA(t):
+	print t, "Waste Day"
+	ser.write('W\n')	
+	
 def _RegularDay(t):
     result = tkMessageBox.askquestion("Regular Treatment Day Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
@@ -348,13 +356,13 @@ ROWOButton = Tk.Button(master=root, text='RO wo R', command=_ReverseOsmosisWO)
 ROWOButton.grid(row=2, column=2)
 ROWOButton.config(height = 5, width = 16)
 
-#schedule.every().monday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().tuesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().wednesday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().thursday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().friday.at("09:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().saturday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().sunday.at("9:00").do(_RegularDay,'It is 9:00AM, Scheduled Treatment: ')
+#schedule.every().monday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().tuesday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().wednesday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().thursday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().friday.at("09:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().saturday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().sunday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 
 thread = threading.Thread(target=RunAndLog, args=())
 e = threading.Event()
