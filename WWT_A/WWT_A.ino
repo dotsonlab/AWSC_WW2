@@ -1327,7 +1327,7 @@ void regularday(){
   }
   if (systemstate==2){
     treattimes[2]=timnow;
-    PRE(81,1);
+    PRE(74,1);
     fixaverages(10);
   }
   treattimes[3]=timnow;
@@ -1349,7 +1349,7 @@ void wasteday(){
   }
   if (systemstate==2){
     treattimes[2]=timnow;
-    PRE(81,1);
+    PRE(74,1);
     fixaverages(10);
   }
   treattimes[3]=timnow;
