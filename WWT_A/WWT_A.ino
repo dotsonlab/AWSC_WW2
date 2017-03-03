@@ -1601,9 +1601,9 @@ void loop() {
   waiting(60000);//sending serial data
   systemstate =1;
   //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
-  NF1(58,1,1);
+  //NF1(58,1,1);//target flow is .5
   //PRE(80,0);
   //regularday();
-  while(1){};
+  //while(1){};
 }
 //******     END LOOP     ******//
