@@ -1237,27 +1237,27 @@ void NF1(int target, int rinsecycle, int wastecycle){//determine if need to run 
     }
     delay(1000);
 
-    if (flw[9]>0.1 && flw[9]<=0.8 && spotnf>100 &&pumpon==1){
+    if (flw[9]>0.1 && flw[9]<=0.3 && spotnf>100 &&pumpon==1){
       nfvalvecloseupflow(40);//close valve alot
       valvepos();
     }
-    if (flw[9]>0.8 && flw[9]<0.9 && spotnf>100 && pumpon==1){
+    if (flw[9]>0.3 && flw[9]<0.4 && spotnf>100 && pumpon==1){
       nfvalvecloseupflow(20);
       valvepos();
     }
-    if (flw[9]>0.9 && flw[9]<1 && spotnf>100 && pumpon==1){//close valve a little bit
+    if (flw[9]>0.4 && flw[9]<0.5 && spotnf>100 && pumpon==1){//close valve a little bit
       nfvalvecloseupflow(10);
       valvepos();
     }
-    if (flw[9]>1.05 && flw[9]<=1.15 && spotnf>100 && pumpon==1){
+    if (flw[9]>0.55 && flw[9]<=0.65 && spotnf>100 && pumpon==1){
       nfvalveopenupflow(10);//open valve a little bit
       valvepos();
     }
-    if (flw[9]>1.15 && spotnf>100 && spotnf<800 && pumpon==1){
+    if (flw[9]>0.65 && spotnf>100 && spotnf<800 && pumpon==1){
       nfvalveopenupflow(20);//open valve a lot
       valvepos();
     }
-    if (flw[9]>=1 && flw[9]<=1.05){
+    if (flw[9]>=0.5 && flw[9]<=0.55){
       lcd.setCursor(0, 2);
       lcd.print("correct flow");
       valvepos();}
@@ -1601,9 +1601,9 @@ void loop() {
   waiting(60000);//sending serial data
   systemstate =1;
   //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
-  //NF1(80,1,1);
+  NF1(58,1,1);
   //PRE(80,0);
   //regularday();
-  //while(1){};
+  while(1){};
 }
 //******     END LOOP     ******//
