@@ -730,7 +730,15 @@ if (systemstate ==1){
   delay(20000);
   delay(20000);
   o3pump(0);
-} }}
+} 
+}
+if (systemstate!=1 && ozonestatus==1){
+  o3(0);
+  delay(20000);
+  delay(20000);
+  delay(20000);//delay 1min
+  o3pump(0);
+}}
 
 void bubbleonoff(){
   if (spretank<7){
