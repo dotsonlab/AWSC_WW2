@@ -36,6 +36,7 @@ unsigned long o3starttime=0;
 unsigned long oldt =0;
 unsigned long tt=0;
 unsigned long bw =0;
+unsigned long uvontime=0;
 char *flotot;
 char *floinst;
 long y;
@@ -64,6 +65,7 @@ int nfastatus;
 int nfbstatus;
 int wastestatus;
 int wwrinsestatus;
+int sendbackstatus;
 int maxwaste = 50;
 //initial 120v relay status
 int bubbleblaststatus=0;
@@ -93,14 +95,14 @@ const int pretankc=25;
 
 /* Valves removed with removal of Ceramic MF
 
-const int mfb=24;
+const int mfb=24;//lower opening
 const int mfbo=23;
 const int mfbc=22;
-
-const int mfc=30;
-const int mfco=29;
-const int mfcc=28;
 */
+const int sendback=30;//upper opening
+const int sendbacko=29;
+const int sendbackc=28;
+
 
 const int prefiltvalve=36;
 const int prefilto=35;
@@ -222,6 +224,10 @@ void setup() {
   pinMode(wwrinseo, INPUT);
   pinMode(wwrinsec, INPUT);
 
+  pinMode(sendback, OUTPUT);
+  pinMode(sendbacko, INPUT);
+  pinMode(sendbackc, INPUT);
+
   //12v stepper positioned plug valve
   pinMode(nfdir, OUTPUT);
   pinMode(nfs, OUTPUT);
@@ -337,11 +343,17 @@ void o3(int cmd){//ozone generator on/off
 }
 
 void uvdisinfect(int cmd){//uv disinfection on/off
+  
   if (cmd==0){
+    uvontime=0;
     digitalWrite(uv,LOW);
     uvstatus=0;
+    
   }
   if (cmd==1){
+    if (uvstatus ==0){
+      uvontime=millis();
+    }
     digitalWrite(uv,HIGH);
     uvstatus=1;
   }
@@ -412,6 +424,14 @@ void valvecheck(){//checks all valve limit switches, assigns status either movin
     wwrinsestatus=1;
     } else {wwrinsestatus=2;
       }
+  clos=digitalRead(sendbackc);
+  ope=digitalRead(sendbacko);
+  if (clos==1 && ope==0){
+    sendbackstatus=0;
+    } else if (clos==0 && ope ==1){
+    sendbackstatus=1;
+    } else {sendbackstatus=2;
+      }
 }
 void closeallvalves(){//closes all valves, chekc they are closed. used before treatment sequence
   digitalWrite(roa, LOW);
@@ -421,6 +441,14 @@ void closeallvalves(){//closes all valves, chekc they are closed. used before tr
   digitalWrite(prefiltvalve, LOW);
   digitalWrite(waste, LOW);
   digitalWrite(wwrinse,LOW);
+  digitalWrite(sendback,LOW);
+  checkvalve = false;
+  while(checkvalve == false){ //wait for valves to turn
+    valvecheck();
+    if (sendbackstatus ==0){
+      checkvalve = true;
+    }
+  }
   checkvalve = false;
   while(checkvalve == false){ //wait for valves to turn
     valvecheck();
@@ -765,22 +793,22 @@ void waiting(unsigned long interval){//function to read and report everything at
   }
 }
 
-void RO(int target, int rinsecycle, int wastecycle){
+void RO(int target, int rinsecycle, int wastecycle){//wastecycle is sendback
   if (swwtank >= target && sroftank< 5) {//if water needs to be treated
     return;}
     lcd.setCursor(0, 0);
     lcd.print("RO Treatment");
     closeallvalves();
     checkvalve = false;
-    uvdisinfect(1);//turn on uvs
-    unsigned long warmuptime =millis();//set initial time for uv warmup
+    uvdisinfect(1);//turn on uvs or make sure they are on
     lcd.setCursor(0, 3);
     lcd.print("UV Warmup");
     waiting(1);
-    while (t-warmuptime< 900000){//900000){ //warmup uv 15 min
-    waiting(5000);
+    while (t-uvontime< 900000){//warmup uv 15 min
+    waiting(10000);
   }
-
+    lcd.setCursor(0, 3);
+    lcd.print("UV Ready     ");
   if (pretankstatus !=0) {//make sure all valves are closed or exit if error
     return;}
   if (prefiltstatus !=0) {
@@ -871,7 +899,8 @@ float targetflow=1;
 
     hppump(0);
     rocontrolopen();//open plug valve for low pressure rinse
-if (wastecycle ==1 && swastetank<maxwaste-15){//decide to run waste cycle. if waste tank is full donot run
+if (wastecycle ==1 && spretank<40){//decide to run waste cycle. if gw tank is full donot run
+    waiting(1);
     digitalWrite(roa, HIGH);//open tank for waste cycle
         checkvalve = false;
   while(checkvalve == false){
@@ -886,26 +915,27 @@ if (wastecycle ==1 && swastetank<maxwaste-15){//decide to run waste cycle. if wa
     if (robstatus ==0){
     checkvalve = true;
     }}
-digitalWrite(waste, HIGH);//open waste
+digitalWrite(sendback, HIGH);//open sendback
         checkvalve = false;
   while(checkvalve == false){
     valvecheck();
-    if (wastestatus ==1){
+    if (sendbackstatus ==1){
     checkvalve = true;
     } }
   waiting(1);
       lcd.setCursor(0, 3);
-    lcd.print("wasting RO   ");
+    lcd.print("sendback RO   ");
   unsigned long wastetime = sroftank *4.8*1000;//mseconds to run pump
   hppump(1);
   delay(wastetime);//wait for empty
   hppump(0);
   delay(1000);
-  digitalWrite(waste, LOW);//tank valve close
+  waiting(1);
+  digitalWrite(sendback, LOW);//tank valve close
         checkvalve = false;
   while(checkvalve == false){
     valvecheck();
-    if (wastestatus ==0){
+    if (sendbackstatus ==0){
     checkvalve = true;
     } }
   
@@ -928,6 +958,7 @@ digitalWrite(waste, HIGH);//open waste
     checkvalve = true;
     }}
   if (rinsecycle==1){
+    waiting(1);
     digitalWrite(wwrinse, HIGH);
     checkvalve = false;
     while(checkvalve == false){ //wait for valves to turn
@@ -952,6 +983,7 @@ digitalWrite(waste, HIGH);//open waste
 
     hppump(0);
     uvdisinfect(0);
+    waiting(1);
     digitalWrite(wwrinse, LOW);
     while(checkvalve == false){ //wait for  valve to be closed
       valvecheck();
@@ -972,7 +1004,7 @@ digitalWrite(waste, HIGH);//open waste
   checkvalve = false;
 
   waiting(1);
-  systemstate=3;
+  systemstate=2;
   lcd.setCursor(0, 3);
   lcd.print("RO complete  ");
 }
@@ -1067,7 +1099,7 @@ float targetflow=1;
     }
   hppump(0);
   nfcontrolopen();//open plup valve all the way
-  if (wastecycle ==1 && swastetank<maxwaste-15){//decide if to run waste cycle
+  if (wastecycle ==1 && swastetank<maxwaste-15){//decide if to run waste cycle if not does send back of cencentrate
     digitalWrite(nfa, HIGH);//valve open
         checkvalve = false;
   while(checkvalve == false){
@@ -1098,6 +1130,7 @@ digitalWrite(waste, HIGH);//valve open
   delay(wastetime);//wait for empty
   hppump(0);
   delay(5000);
+  waiting(500);
   digitalWrite(waste, LOW);
         checkvalve = false;
   while(checkvalve == false){//waste tank closed
@@ -1108,8 +1141,48 @@ digitalWrite(waste, HIGH);//valve open
   
   
   }
-
+else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
+    digitalWrite(nfa, HIGH);//valve open
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfastatus ==1){
+    checkvalve = true;
+    }}
+    digitalWrite(nfb, LOW);//valve close
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfbstatus ==0){
+    checkvalve = true;
+    }}
+digitalWrite(sendback, HIGH);//valve open
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (sendbackstatus ==1){
+    checkvalve = true;
+    } }
+  waiting(1);
+      lcd.setCursor(0, 3);
+    lcd.print("wasting NF       ");
+  unsigned long wastetime = snfftank *4.8*1000;//milliseconds to run pump
+  //Serial.print(wastetime);
+  hppump(1);
+  delay(wastetime);//wait for empty
+  hppump(0);
+  delay(5000);
+  waiting(500);
+  digitalWrite(sendback, LOW);
+        checkvalve = false;
+  while(checkvalve == false){//waste tank closed
+    valvecheck();
+    if (sendbackstatus ==0){
+    checkvalve = true;
+    } }
+}
   if (rinsecycle==1){
+    waiting(1);
         digitalWrite(nfb, HIGH);//valve open
         checkvalve = false;
   while(checkvalve == false){
@@ -1177,7 +1250,7 @@ digitalWrite(nfa, LOW);
   }
   checkvalve = false;
   waiting(1);
-  systemstate=2;
+  systemstate=1;
   lcd.setCursor(0, 3);
   lcd.print("NF complete  ");
 }
@@ -1309,7 +1382,7 @@ void PRE(int target, int rinsecycle){
   checkvalve = false;
 
   waiting(1);
-  systemstate=1;
+  systemstate=3;
   lcd.setCursor(0, 3);
   lcd.print("Pretreatment complete  ");
 }
@@ -1324,19 +1397,20 @@ void fixaverages(int number){//takes 10 readings to stabalize values
 void regularday(){
   fixaverages(10);
   systemstate=0;
+  uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    RO(80,1,0);//ro treatment no waste cycle
+    PRE(74,1);
     fixaverages(10);
   }
   if (systemstate ==3){
     treattimes[1]=timnow;
-    NF(81,1,0);//nf treatment no waste cycle
+    RO(80,1,0);//ro treatment no waste cycle
     fixaverages(10);
   }
   if (systemstate==2){
     treattimes[2]=timnow;
-    PRE(74,1);
+    NF(81,1,0);//nf treatment no waste cycle
     fixaverages(10);
   }
   treattimes[3]=timnow;
@@ -1346,19 +1420,20 @@ void regularday(){
 void wasteday(){
   fixaverages(10);
   systemstate=0;
+  uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    RO(80,1,1);//ro treatment cycle
+    PRE(74,1);
     fixaverages(10);
   }
   if (systemstate ==3){
     treattimes[1]=timnow;
-    NF(81,1,1);
+    RO(80,1,1);
     fixaverages(10);
   }
   if (systemstate==2){
     treattimes[2]=timnow;
-    PRE(74,1);
+    NF(81,1,1);
     fixaverages(10);
   }
   treattimes[3]=timnow;
@@ -1409,6 +1484,6 @@ void loop() {
   //NF(80,0,0);//target flow is .5
   //PRE(80,0);
   //regularday();
-  //while(1){};
+  //while(1){};//error handling uv wont turn off if return is triggered during treatment
 }
 //******     END LOOP     ******//
