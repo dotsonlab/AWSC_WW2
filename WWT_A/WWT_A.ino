@@ -823,7 +823,7 @@ void RO(int target, int rinsecycle, int wastecycle){
 
   hppump(1);
   pressures();
-float targetflow=1.5;
+float targetflow=1;
   while (swwtank< target && sroftank> 7){//treat as long as tank not too full or empty
     waiting(10000);
     lcd.setCursor(0, 3);
