@@ -1257,7 +1257,7 @@ void NF1(int target, int rinsecycle, int wastecycle){//determine if need to run 
       nfvalvecloseupflow(10);
       valvepos();
     }
-    if (flw[9]>0.55 && flw[9]<=0.65 && spotnf>100 && pumpon==1){
+    if (flw[9]>0.55 && flw[9]<=0.65 && spotnf<800 && pumpon==1){
       nfvalveopenupflow(10);//open valve a little bit
       valvepos();
     }
@@ -1609,7 +1609,7 @@ void loop() {
   waiting(60000);//sending serial data
   systemstate =1;
   //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
-  //NF1(58,1,1);//target flow is .5
+  NF1(80,0,0);//target flow is .5
   //PRE(80,0);
   //regularday();
   //while(1){};
