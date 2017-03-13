@@ -1207,6 +1207,7 @@ digitalWrite(sendback, HIGH);//valve open
       }
     }
     checkvalve = false;
+    delay(1000);
     hppump(1);//pump on for rinse
     lcd.setCursor(0, 3);
     lcd.print("rinsing     ");
@@ -1460,7 +1461,7 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
       NF(80,0,0);//comand for nf treatment with no rinse and no waste
     }
     if (incomingByte == 'M'){
-      NF(80,1,1);//comand for nf treatment with rinse and no waste//test out waste
+      NF(80,1,0);//comand for nf treatment with rinse and no waste//test out waste
     }
     if (incomingByte == 'R'){
       RO(80,0,0);//command for ro treatment with no rinse no waste
