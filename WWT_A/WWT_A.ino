@@ -1303,14 +1303,14 @@ void PRE(int target, int rinsecycle){
   waiting(1);
   bw = millis();
   float PREflows=flw[4];
-  while (snfftank< target && spretank> 7){
+  while (snfftank< target && spretank> 5){
     //Serial.print(flowtarget);Serial.print("  "); Serial.println(flw[4]-PREflows);
     waiting(10000);
     lcd.setCursor(0, 3);
     lcd.print("total flow: ");lcd.print(flw[4]-PREflows);
     pressures();
     flows();
-    if (sfeedp>90){
+    if (sfeedp>105){
       hppump(0);
       return;
       }
@@ -1347,7 +1347,7 @@ void PRE(int target, int rinsecycle){
     waiting(1);
     while (t-rinsetime < 5000){ //rinse 5 sec
       waiting(500);
-      if (sfeedp>240){//stop is pressure is too high
+      if (sfeedp>105){//stop is pressure is too high
       hppump(0);
       return;
       }
