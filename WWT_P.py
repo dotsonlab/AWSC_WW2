@@ -361,7 +361,7 @@ schedule.every().tuesday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Tre
 schedule.every().wednesday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().thursday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().friday.at("09:00").do(_WasteDayA,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().saturday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
+#schedule.every().saturday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().sunday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 
 thread = threading.Thread(target=RunAndLog, args=())
