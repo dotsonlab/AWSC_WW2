@@ -1055,7 +1055,7 @@ void NF(int target, int rinsecycle, int wastecycle){//determine if need to run r
   nfcontrolopen();//open plug valve all the way
   hppump(1);
   pressures();
-float targetflow=0.5;
+float targetflow=0.75;
   while (sroftank< target && snfftank> 7){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
@@ -1141,7 +1141,7 @@ digitalWrite(waste, HIGH);//valve open
   
   
   }
-else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
+/*else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
     digitalWrite(nfa, HIGH);//valve open
         checkvalve = false;
   while(checkvalve == false){
@@ -1180,7 +1180,7 @@ digitalWrite(sendback, HIGH);//valve open
     if (sendbackstatus ==0){
     checkvalve = true;
     } }
-}
+}*/
   if (rinsecycle==1){
     waiting(1);
         digitalWrite(nfb, HIGH);//valve open
