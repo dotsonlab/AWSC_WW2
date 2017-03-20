@@ -1055,7 +1055,7 @@ void NF(int target, int rinsecycle, int wastecycle){//determine if need to run r
   nfcontrolopen();//open plug valve all the way
   hppump(1);
   pressures();
-float targetflow=0.75;
+float targetflow=0.5;
   while (sroftank< target && snfftank> 7){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
