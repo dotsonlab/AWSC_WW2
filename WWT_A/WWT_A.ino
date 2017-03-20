@@ -851,7 +851,7 @@ void RO(int target, int rinsecycle, int wastecycle){//wastecycle is sendback
 
   hppump(1);
   pressures();
-float targetflow=1;
+float targetflow=0.75;
   while (swwtank< target && sroftank> 7){//treat as long as tank not too full or empty
     waiting(10000);
     lcd.setCursor(0, 3);
@@ -915,11 +915,11 @@ if (wastecycle ==1 && spretank<40){//decide to run waste cycle. if gw tank is fu
     if (robstatus ==0){
     checkvalve = true;
     }}
-digitalWrite(sendback, HIGH);//open sendback
+digitalWrite(waste, HIGH);//open sendback
         checkvalve = false;
   while(checkvalve == false){
     valvecheck();
-    if (sendbackstatus ==1){
+    if (wastestatus ==1){
     checkvalve = true;
     } }
   waiting(1);
@@ -931,11 +931,11 @@ digitalWrite(sendback, HIGH);//open sendback
   hppump(0);
   delay(1000);
   waiting(1);
-  digitalWrite(sendback, LOW);//tank valve close
+  digitalWrite(waste, LOW);//tank valve close
         checkvalve = false;
   while(checkvalve == false){
     valvecheck();
-    if (sendbackstatus ==0){
+    if (wastestatus ==0){
     checkvalve = true;
     } }
   
@@ -1055,7 +1055,7 @@ void NF(int target, int rinsecycle, int wastecycle){//determine if need to run r
   nfcontrolopen();//open plug valve all the way
   hppump(1);
   pressures();
-float targetflow=0.5;
+float targetflow=0.75;
   while (sroftank< target && snfftank> 7){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
@@ -1461,7 +1461,7 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
       NF(80,0,0);//comand for nf treatment with no rinse and no waste
     }
     if (incomingByte == 'M'){
-      NF(80,1,1);//comand for nf treatment with rinse and no waste//test out waste
+      NF(80,1,0);//comand for nf treatment with rinse and no waste//test out waste
     }
     if (incomingByte == 'R'){
       RO(80,0,0);//command for ro treatment with no rinse no waste
