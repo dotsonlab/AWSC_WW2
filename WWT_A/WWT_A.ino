@@ -650,19 +650,39 @@ void nfcontrolopen(){//open valve until all the way open
 
 void tanklevel(){//read and average tank levels for all 5 tanks
   int junk = analogRead(roftankpin);
-  float roftank = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
-
+  float roftank1 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank2 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank3 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank4 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank = (roftank1 + roftank2 + roftank3 + roftank4)/4;
+  
   junk = analogRead(nfftankpin);
-  float nfftank = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
-
+  float nfftank1 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank2 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank3 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank4 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank = (nfftank1 + nfftank2 + nfftank3 + nfftank4)/4;
+  
   junk = analogRead(preftankpin);
-  float pretank = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank1 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank2 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank3 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank4 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank = (pretank1 + pretank2 + pretank3 + pretank4)/4;
 
   junk = analogRead(wwtankpin);
-  float wwtank = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank1 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank2 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank3 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank4 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank = (wwtank1 + wwtank2 + wwtank3 + wwtank4)/4;
 
   junk = analogRead(wastetankpin);
-  float wastetank = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank1 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank2 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank3 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank4 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank = (wastetank1 + wastetank2 + wastetank3 + wastetank4)/4;
   
   spretank = (pretank+spretank)/2;
   sroftank = (sroftank+roftank)/2;
