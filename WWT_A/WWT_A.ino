@@ -654,35 +654,55 @@ void tanklevel(){//read and average tank levels for all 5 tanks
   float roftank2 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
   float roftank3 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
   float roftank4 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
-  float roftank = (roftank1 + roftank2 + roftank3 + roftank4)/4;
+  float roftank5 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank6 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank7 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank8 = (analogRead(roftankpin)*0.177-35.714286)*36.5*24*0.004329;
+  float roftank = (roftank1 + roftank2 + roftank3 + roftank4 + roftank5 + roftank6 + roftank7 + roftank8)/8;
   
   junk = analogRead(nfftankpin);
   float nfftank1 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
   float nfftank2 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
   float nfftank3 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
   float nfftank4 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
-  float nfftank = (nfftank1 + nfftank2 + nfftank3 + nfftank4)/4;
+  float nfftank5 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank6 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank7 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank8 = (analogRead(nfftankpin)*0.177165-35.433)*36.5*24*0.004329;
+  float nfftank = (nfftank1 + nfftank2 + nfftank3 + nfftank4 + nfftank5 + nfftank6 + nfftank7 + nfftank8)/8;
   
   junk = analogRead(preftankpin);
   float pretank1 = analogRead(preftankpin)*0.668388-146.32479;
   float pretank2 = analogRead(preftankpin)*0.668388-146.32479;
   float pretank3 = analogRead(preftankpin)*0.668388-146.32479;
   float pretank4 = analogRead(preftankpin)*0.668388-146.32479;
-  float pretank = (pretank1 + pretank2 + pretank3 + pretank4)/4;
+  float pretank5 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank6 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank7 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank8 = analogRead(preftankpin)*0.668388-146.32479;
+  float pretank = (pretank1 + pretank2 + pretank3 + pretank4 + pretank5 + pretank6 + pretank7 + pretank8)/8;
 
   junk = analogRead(wwtankpin);
   float wwtank1 = analogRead(wwtankpin)*0.65375348-134.42675;
   float wwtank2 = analogRead(wwtankpin)*0.65375348-134.42675;
   float wwtank3 = analogRead(wwtankpin)*0.65375348-134.42675;
   float wwtank4 = analogRead(wwtankpin)*0.65375348-134.42675;
-  float wwtank = (wwtank1 + wwtank2 + wwtank3 + wwtank4)/4;
+  float wwtank5 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank6 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank7 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank8 = analogRead(wwtankpin)*0.65375348-134.42675;
+  float wwtank = (wwtank1 + wwtank2 + wwtank3 + wwtank4 + wwtank5 + wwtank6 + wwtank7 + wwtank8)/8;
 
   junk = analogRead(wastetankpin);
   float wastetank1 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
   float wastetank2 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
   float wastetank3 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
   float wastetank4 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
-  float wastetank = (wastetank1 + wastetank2 + wastetank3 + wastetank4)/4;
+  float wastetank5 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank6 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank7 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank8 = (analogRead(wastetankpin)*0.14351-28.702)*24*18*0.004329;
+  float wastetank = (wastetank1 + wastetank2 + wastetank3 + wastetank4 + wastetank5 + wastetank6 + wastetank7 + wastetank8)/8;
   
   spretank = (pretank+spretank)/2;
   sroftank = (sroftank+roftank)/2;
@@ -1421,12 +1441,12 @@ void regularday(){
   uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    PRE(74,1);
+    PRE(80,1);
     fixaverages(10);
   }
   if (systemstate ==3){
     treattimes[1]=timnow;
-    RO(80,1,0);//ro treatment no waste cycle
+    RO(81,1,0);//ro treatment no waste cycle
     fixaverages(10);
   }
   if (systemstate==2){
@@ -1444,17 +1464,17 @@ void wasteday(){
   uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    PRE(74,1);
+    PRE(80,1);
     fixaverages(10);
   }
   if (systemstate ==3){
     treattimes[1]=timnow;
-    RO(80,1,0);
+    RO(85,1,1);
     fixaverages(10);
   }
   if (systemstate==2){
     treattimes[2]=timnow;
-    NF(81,1,1);
+    NF(85,1,1);
     fixaverages(10);
   }
   treattimes[3]=timnow;
@@ -1481,7 +1501,7 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
       NF(80,0,0);//comand for nf treatment with no rinse and no waste
     }
     if (incomingByte == 'M'){
-      NF(75,1,1);//comand for nf treatment with rinse and no waste//test out waste
+      NF(80,1,0);//comand for nf treatment with rinse and no waste//test out waste
     }
     if (incomingByte == 'R'){
       RO(80,0,0);//command for ro treatment with no rinse no waste
