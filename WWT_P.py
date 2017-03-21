@@ -357,7 +357,7 @@ ROWOButton.grid(row=2, column=2)
 ROWOButton.config(height = 5, width = 16)
 
 schedule.every().monday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().tuesday.at("9:00").do(_WasteDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().tuesday.at("8:15").do(_WasteDayA,'It is 8:15AM, Scheduled Treatment: ')
 schedule.every().wednesday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().thursday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().friday.at("9:00").do(_WasteDayA,'It is 9:00AM, Scheduled Treatment: ')
