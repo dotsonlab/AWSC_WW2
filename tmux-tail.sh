@@ -16,3 +16,6 @@ tmux split-window -v -t tail_log
 tmux select-layout -t tail_log tiled
 tmux attach -t tail_log
 
+#to quit:  
+# ctrl-b then :
+# type kill-session
