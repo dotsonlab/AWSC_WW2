@@ -6,15 +6,15 @@ echo "$TODAY"
 cd /home/pi/github/AWSC_WW2
 
 tmux new -s tail_log -d
-tmux send-keys -t tail_log 'tail -f ${TODAY}_WWT-Pressure.txt' C-m
+tmux send-keys -t tail_log "tail -f ${TODAY}_WWT-Pressure.txt"
 tmux split-window -v -t tail_log
-tmux send-keys -t tail_log 'tail -f "${TODAY}_WWT-TankLevels.txt' C-m
+tmux send-keys -t tail_log "tail -f "${TODAY}_WWT-TankLevels.txt"
 tmux split-window -v -t tail_log
-tmux send-keys -t tail_log 'tail -f "${TODAY}_WWT-iFlow.txt' C-m
+tmux send-keys -t tail_log "tail -f "${TODAY}_WWT-iFlow.txt"
 tmux split-window -v -t tail_log
-tmux send-keys -t tail_log 'tail -f "${TODAY}_WWT-Relays.txt' C-m
+tmux send-keys -t tail_log "tail -f "${TODAY}_WWT-Relays.txt"
 tmux split-window -h -t tail_log
-tmux send-keys -t tail_log 'tail -f "${TODAY}_WWT-TandPD.txt' C-m
+tmux send-keys -t tail_log "tail -f "${TODAY}_WWT-TandPD.txt"
 tmux split-window -v -t tail_log
 tmux select-layout -t tail_log tiled
 tmux attach -t tail_log
