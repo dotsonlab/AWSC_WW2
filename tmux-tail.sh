@@ -1,6 +1,7 @@
 #!/bin/sh
 
 TODAY=$(date "+%Y_%-m_%-d")
+ECHO "$TODAY"
 
 cd /home/pi/github/AWSC_WW2
 
