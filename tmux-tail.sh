@@ -1,6 +1,6 @@
 #!/bin/sh
 
-$DATE = date "+%Y_%-m_%-d"
+DATE = date "+%Y_%-m_%-d"
 
 cd /home/pi/github/AWSC_WW2
 
