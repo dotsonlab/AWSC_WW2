@@ -1481,6 +1481,29 @@ void wasteday(){
   lcd.setCursor(0, 0);
   lcd.print("Waste created ");
 }
+void halfwasteday(){
+  fixaverages(10);
+  systemstate=0;
+  uvdisinfect(1);
+  if (systemstate==0){
+    treattimes[0]=timnow;
+    PRE(80,1);
+    fixaverages(10);
+  }
+  if (systemstate ==3){
+    treattimes[1]=timnow;
+    RO(85,1,0);
+    fixaverages(10);
+  }
+  if (systemstate==2){
+    treattimes[2]=timnow;
+    NF(85,1,1);
+    fixaverages(10);
+  }
+  treattimes[3]=timnow;
+  lcd.setCursor(0, 0);
+  lcd.print("Waste created ");
+}
 //******     END FUNCTIONS     ******//
 void serialEvent() {   //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
   if (Serial.available() > 0) {
@@ -1514,6 +1537,9 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
     }
     if (incomingByte =='V'){
       PRE(80,1);//command for pretreatment with rinse
+    }
+    if (incomingByte =='G'){
+      halfwasteday()
     }
   }
 }
