@@ -29,7 +29,7 @@ float actemp;
 float outtemp;
 float blkpwr;
 float redpwr;
-int incomingByte;
+String incomingByte;
 unsigned long t=0;
 unsigned long o3time=0;
 unsigned long o3starttime=0;
@@ -1507,41 +1507,36 @@ void halfwasteday(){
 //******     END FUNCTIONS     ******//
 void serialEvent() {   //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
   if (Serial.available() > 0) {
-    incomingByte = Serial.read();
-    if (incomingByte == 'H') {
-      //hppump(1);//command for turn on pump
-    }
-    if (incomingByte == 'L') {
-      hppump(0);//commadn for turn off pump
-    }
-    if (incomingByte == 'D'){
+    incomingByte = Serial.readStringUntil('\n');
+    if (incomingByte == String("RegularDay")){
       regularday();//command for start regular day
     }
-    if (incomingByte == 'W'){
+    if (incomingByte == String("FullWasteDay")){
       wasteday();//command for start waste day
     }
-    if (incomingByte == 'N'){
+    if (incomingByte == String("NFwoRinse")){
       NF(80,0,0);//comand for nf treatment with no rinse and no waste
     }
-    if (incomingByte == 'M'){
+    if (incomingByte == String("NFwithRinse")){
       NF(80,1,0);//comand for nf treatment with rinse and no waste//test out waste
     }
-    if (incomingByte == 'R'){
+    if (incomingByte == String("ROwoRinse")){
       RO(80,0,0);//command for ro treatment with no rinse no waste
     }
-    if (incomingByte == 'T'){
+    if (incomingByte == String("ROwithRinse")){
       RO(80,1,0);//command for ro treatment with rinse no waste
     }
-    if (incomingByte =='C'){
+    if (incomingByte ==String("CFwoRinse")){
       PRE(80,0);//command for pretreatment without rinse
     }
-    if (incomingByte =='V'){
+    if (incomingByte ==String("CFwithRinse")){
       PRE(80,1);//command for pretreatment with rinse
     }
-    if (incomingByte =='G'){
-      halfwasteday()
+    if (incomingByte == String("HalfWasteDay")){
+      halfwasteday();
     }
   }
+  
 }
 //******     BEGIN LOOP     ******//
 void loop() {
