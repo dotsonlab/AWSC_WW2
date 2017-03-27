@@ -237,17 +237,21 @@ def TandP():
 
 def _RegularDayA(t):
 	print t, "Regular Day"
-	ser.write('D\n')
+	ser.write('RegularDay\n')
 
 def _WasteDayA(t):
 	print t, "Waste Day"
-	ser.write('W\n')	
+	ser.write('FullWasteDay\n')
 	
+def _HalfWasteDayA(t):
+	print t, "Half Waste Day"
+	ser.write('HalfWasteDay\n')
+
 def _RegularDay(t):
     result = tkMessageBox.askquestion("Regular Treatment Day Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print t, "Regular Day"
-        ser.write('D\n')
+        ser.write('RegularDay\n')
     else:
         print "Regular Day Treatment Canceled"
 
@@ -255,7 +259,7 @@ def _WasteDay(t):
     result = tkMessageBox.askquestion("Waste Treatment Day Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print t, "Waste Day"
-        ser.write('W\n')
+        ser.write('FullWasteDay\n')
     else:
         print "Waste Day Treatment Canceled"
 
@@ -263,7 +267,7 @@ def _CartridgeFilter():
     result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print "Cartridge Filter"
-        ser.write('V\n')
+        ser.write('CFwithRinse\n')
     else:
         print "Cartridge Filter Treatment Step Canceled"
 
@@ -271,7 +275,7 @@ def _CartridgeFilterWO():
     result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print "Cartridge Filter without Rinse"
-        ser.write('C\n')
+        ser.write('CFwoRinse\n')
     else:
         print "Cartridge Filter without Rinse Treatment Step Canceled"
 
@@ -279,7 +283,7 @@ def _Nanofilter():
     result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print "Nanofilter"
-        ser.write('M\n')
+        ser.write('NFwithRinse\n')
     else:
         print "Nanofilter Treatment Step Canceled"
 
@@ -287,7 +291,7 @@ def _NanofilterWO():
     result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print "Nanofilter without Rinse"
-        ser.write('N\n')
+        ser.write('NFwoRinse\n')
     else:
         print "Nanofilter without Rinse Treatment Step Canceled"
 
@@ -295,7 +299,7 @@ def _ReverseOsmosis():
     result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print "Reverse Osmosis"
-        ser.write('T\n')
+        ser.write('ROwithRinse\n')
     else:
         print "Reverse Osomosis Treatment Step Canceled"
 
@@ -303,7 +307,7 @@ def _ReverseOsmosisWO():
     result = tkMessageBox.askquestion("Manual Treatment Step Confirmation", "Are You Sure?", icon='warning')
     if result=='yes':
         print "Reverse Osmosis without Rinse"
-        ser.write('R\n')
+        ser.write('ROwoRinse\n')
     else:
         print "Reverse Osmosis without Rinse Treatment Step Canceled"
 
@@ -357,7 +361,7 @@ ROWOButton.grid(row=2, column=2)
 ROWOButton.config(height = 5, width = 16)
 
 schedule.every().monday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
-schedule.every().tuesday.at("9:00").do(_WasteDayA,'It is 9:00AM, Scheduled Treatment: ')
+schedule.every().tuesday.at("9:00").do(_HalfWasteDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().wednesday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().thursday.at("9:00").do(_RegularDayA,'It is 9:00AM, Scheduled Treatment: ')
 schedule.every().friday.at("9:00").do(_WasteDayA,'It is 9:00AM, Scheduled Treatment: ')
