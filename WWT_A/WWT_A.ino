@@ -909,25 +909,25 @@ float targetflow=0.75;
       return;
     }
     delay(1000);
-    if (flw[7]>0.1 && flw[7]<=.5*targetflow && rospot>100 && pumpon==1 && sfeedp < 230){
+    if (flw[7]>0.1 && flw[7]<=.5*targetflow && rospot>100 && pumpon==1 && sfeedp < 200){
       rovalvecloseupflow(40);//close valve alot
       valvepos();
     }
 
-    if (flw[7]>.5*targetflow && flw[7]<targetflow-0.15 && rospot>100 && pumpon==1 && sfeedp < 230){
+    if (flw[7]>.5*targetflow && flw[7]<targetflow-0.15 && rospot>100 && pumpon==1 && sfeedp < 200){
       rovalvecloseupflow(20);//close valve alot
       valvepos();
     }
 
-    if (flw[7]>targetflow-0.15 && flw[7]<targetflow && rospot>100 && pumpon==1 && sfeedp < 230){//close valve a little bit
+    if (flw[7]>targetflow-0.15 && flw[7]<targetflow && rospot>100 && pumpon==1 && sfeedp < 200){//close valve a little bit
       rovalvecloseupflow(10);
       valvepos();
     }
-    if (flw[7]>targetflow+.05 && flw[7]<=targetflow+0.15 && rospot<800 && pumpon==1 && sfeedp < 230){
+    if (flw[7]>targetflow+.05 && flw[7]<=targetflow+0.15 && rospot<800 && pumpon==1){
       rovalveopenupflow(10);//open valve a little bit
       valvepos();
     }
-    if (flw[7]>targetflow+0.15 && rospot>100 && rospot<800 && pumpon==1 && sfeedp < 230){ 
+    if (flw[7]>targetflow+0.15 && rospot>100 && rospot<800 && pumpon==1){ 
       rovalveopenupflow(20);//open valve a lot if necessary
       valvepos();
     }
@@ -1112,23 +1112,23 @@ float targetflow=0.5;
     }
     delay(1000);
 
-    if (flw[9]>0.1 && flw[9]<=.5*targetflow && spotnf>100 &&pumpon==1 && sfeedp < 230){
+    if (flw[9]>0.1 && flw[9]<=.5*targetflow && spotnf>100 &&pumpon==1 && sfeedp < 200){
       nfvalvecloseupflow(40);//close valve alot
       valvepos();
     }
-    if (flw[9]>0.5*targetflow && flw[9]<targetflow-0.15 && spotnf>100 && pumpon==1 && sfeedp < 230){
+    if (flw[9]>0.5*targetflow && flw[9]<targetflow-0.15 && spotnf>100 && pumpon==1 && sfeedp < 200){
       nfvalvecloseupflow(20);
       valvepos();
     }
-    if (flw[9]>targetflow-0.15 && flw[9]<targetflow && spotnf>100 && pumpon==1 && sfeedp < 230){//close valve a little bit
+    if (flw[9]>targetflow-0.15 && flw[9]<targetflow && spotnf>100 && pumpon==1 && sfeedp < 200){//close valve a little bit
       nfvalvecloseupflow(10);
       valvepos();
     }
-    if (flw[9]>targetflow+0.05 && flw[9]<=targetflow+0.15 && spotnf<800 && pumpon==1 && sfeedp < 230){
+    if (flw[9]>targetflow+0.05 && flw[9]<=targetflow+0.15 && spotnf<800 && pumpon==1 ){
       nfvalveopenupflow(10);//open valve a little bit
       valvepos();
     }
-    if (flw[9]>targetflow+0.15 && spotnf>100 && spotnf<800 && pumpon==1 && sfeedp < 230){
+    if (flw[9]>targetflow+0.15 && spotnf>100 && spotnf<800 && pumpon==1 ){
       nfvalveopenupflow(20);//open valve a lot
       valvepos();
     }
@@ -1518,7 +1518,7 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
       NF(80,0,0);//comand for nf treatment with no rinse and no waste
     }
     if (incomingByte == String("NFwithRinse")){
-      NF(80,1,1);//comand for nf treatment with rinse and no waste//test out waste
+      NF(80,1,0);//comand for nf treatment with rinse and no waste//test out waste
     }
     if (incomingByte == String("ROwoRinse")){
       RO(80,0,0);//command for ro treatment with no rinse no waste
