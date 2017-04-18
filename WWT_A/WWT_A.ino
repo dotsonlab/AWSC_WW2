@@ -939,48 +939,7 @@ float targetflow=0.75;
 
     hppump(0);
     rocontrolopen();//open plug valve for low pressure rinse
-if (wastecycle ==1 && spretank<40){//decide to run waste cycle. if gw tank is full donot run
-    waiting(1);
-    digitalWrite(roa, HIGH);//open tank for waste cycle
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (roastatus ==1){
-    checkvalve = true;
-    }}
-    digitalWrite(rob, LOW); //close membrane
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (robstatus ==0){
-    checkvalve = true;
-    }}
-digitalWrite(waste, HIGH);//open sendback
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (wastestatus ==1){
-    checkvalve = true;
-    } }
-  waiting(1);
-      lcd.setCursor(0, 3);
-    lcd.print("sendback RO   ");
-  unsigned long wastetime = sroftank *4.8*1000;//mseconds to run pump
-  hppump(1);
-  delay(wastetime);//wait for empty
-  hppump(0);
-  delay(1000);
-  waiting(1);
-  digitalWrite(waste, LOW);//tank valve close
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (wastestatus ==0){
-    checkvalve = true;
-    } }
-  
-  
-  }
+
     checkvalve = false;
     digitalWrite(roa, LOW);//tank
     while(checkvalve == false){ //wait for valves to turn
@@ -1033,7 +992,48 @@ digitalWrite(waste, HIGH);//open sendback
     }
   checkvalve = false;
   }
-
+if (wastecycle ==1){//decide to run waste cycle. if gw tank is full donot run
+    waiting(1);
+    digitalWrite(roa, HIGH);//open tank for waste cycle
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (roastatus ==1){
+    checkvalve = true;
+    }}
+    digitalWrite(rob, LOW); //close membrane
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (robstatus ==0){
+    checkvalve = true;
+    }}
+digitalWrite(waste, HIGH);//open sendback
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (wastestatus ==1){
+    checkvalve = true;
+    } }
+  waiting(1);
+      lcd.setCursor(0, 3);
+    lcd.print("sendback RO   ");
+  unsigned long wastetime = sroftank *4.8*1000;//mseconds to run pump
+  hppump(1);
+  delay(wastetime);//wait for empty
+  hppump(0);
+  delay(1000);
+  waiting(1);
+  digitalWrite(waste, LOW);//tank valve close
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (wastestatus ==0){
+    checkvalve = true;
+    } }
+  
+  
+  }
   digitalWrite(rob, LOW);
   while(checkvalve == false){ //wait for  valve to be closed
     valvecheck();
@@ -1042,7 +1042,14 @@ digitalWrite(waste, HIGH);//open sendback
     }
   }
   checkvalve = false;
-
+digitalWrite(roa, LOW);//tank
+    while(checkvalve == false){ //wait for valves to turn
+      valvecheck();
+      if (roastatus ==0){
+        checkvalve = true;
+      }
+    }
+    checkvalve = false;
   waiting(1);
   systemstate=2;
   lcd.setCursor(0, 3);
@@ -1139,48 +1146,7 @@ float targetflow=0.5;
     }
   hppump(0);
   nfcontrolopen();//open plup valve all the way
-  if (wastecycle ==1 && swastetank<maxwaste-15){//decide if to run waste cycle if not does send back of cencentrate
-    digitalWrite(nfa, HIGH);//valve open
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (nfastatus ==1){
-    checkvalve = true;
-    }}
-    digitalWrite(nfb, LOW);//valve close
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (nfbstatus ==0){
-    checkvalve = true;
-    }}
-digitalWrite(waste, HIGH);//valve open
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (wastestatus ==1){
-    checkvalve = true;
-    } }
-  waiting(1);
-      lcd.setCursor(0, 3);
-    lcd.print("wasting NF       ");
-  unsigned long wastetime = snfftank *4.8*1000;//milliseconds to run pump
-  //Serial.print(wastetime);
-  hppump(1);
-  delay(wastetime);//wait for empty
-  hppump(0);
-  delay(5000);
-  waiting(500);
-  digitalWrite(waste, LOW);
-        checkvalve = false;
-  while(checkvalve == false){//waste tank closed
-    valvecheck();
-    if (wastestatus ==0){
-    checkvalve = true;
-    } }
   
-  
-  }
 /*else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
     digitalWrite(nfa, HIGH);//valve open
         checkvalve = false;
@@ -1261,21 +1227,65 @@ digitalWrite(sendback, HIGH);//valve open
       }
     }
     hppump(0);
-  }//end rinse
-
-  uvdisinfect(0);
-  digitalWrite(wwrinse, LOW);
+    digitalWrite(wwrinse, LOW);
   checkvalve = false;
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
+  while(checkvalve == false){ 
     valvecheck();
     if (wwrinsestatus ==0){
       checkvalve = true;
     }
   }
+  }//end rinse
+  
+  
+if (wastecycle ==1 && swastetank<maxwaste-15){//decide if to run waste cycle if not does send back of cencentrate
+    digitalWrite(nfa, HIGH);//valve open
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfastatus ==1){
+    checkvalve = true;
+    }}
+    digitalWrite(nfb, LOW);//valve close
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfbstatus ==0){
+    checkvalve = true;
+    }}
+digitalWrite(waste, HIGH);//valve open
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (wastestatus ==1){
+    checkvalve = true;
+    } }
+  waiting(1);
+      lcd.setCursor(0, 3);
+    lcd.print("wasting NF       ");
+  unsigned long wastetime = snfftank *4.8*1000;//milliseconds to run pump
+  //Serial.print(wastetime);
+  hppump(1);
+  delay(wastetime);//wait for empty
+  hppump(0);
+  delay(5000);
+  waiting(500);
+  digitalWrite(waste, LOW);
+        checkvalve = false;
+  while(checkvalve == false){//waste tank closed
+    valvecheck();
+    if (wastestatus ==0){
+    checkvalve = true;
+    } }
+  
+  
+  }
+  uvdisinfect(0);
+
   checkvalve = false;
 
   digitalWrite(nfb, LOW);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
+  while(checkvalve == false){ 
     valvecheck();
     if (nfbstatus ==0){
       checkvalve = true;
@@ -1283,7 +1293,7 @@ digitalWrite(sendback, HIGH);//valve open
   }
   checkvalve = false;
 digitalWrite(nfa, LOW);
-  while(checkvalve == false){ //wait for drain and vent valves to be closed
+  while(checkvalve == false){
     valvecheck();
     if (nfastatus ==0){
       checkvalve = true;
