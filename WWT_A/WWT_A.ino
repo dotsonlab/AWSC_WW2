@@ -1147,46 +1147,7 @@ float targetflow=0.5;
   hppump(0);
   nfcontrolopen();//open plup valve all the way
   
-/*else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
-    digitalWrite(nfa, HIGH);//valve open
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (nfastatus ==1){
-    checkvalve = true;
-    }}
-    digitalWrite(nfb, LOW);//valve close
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (nfbstatus ==0){
-    checkvalve = true;
-    }}
-digitalWrite(sendback, HIGH);//valve open
-        checkvalve = false;
-  while(checkvalve == false){
-    valvecheck();
-    if (sendbackstatus ==1){
-    checkvalve = true;
-    } }
-  waiting(1);
-      lcd.setCursor(0, 3);
-    lcd.print("wasting NF       ");
-  unsigned long wastetime = snfftank *4.8*1000;//milliseconds to run pump
-  //Serial.print(wastetime);
-  hppump(1);
-  delay(wastetime);//wait for empty
-  hppump(0);
-  delay(5000);
-  waiting(500);
-  digitalWrite(sendback, LOW);
-        checkvalve = false;
-  while(checkvalve == false){//waste tank closed
-    valvecheck();
-    if (sendbackstatus ==0){
-    checkvalve = true;
-    } }
-}*/
+
   if (rinsecycle==1){
     waiting(1);
         digitalWrite(nfb, HIGH);//valve open
@@ -1280,6 +1241,46 @@ digitalWrite(waste, HIGH);//valve open
   
   
   }
+  else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
+    digitalWrite(nfa, HIGH);//valve open
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfastatus ==1){
+    checkvalve = true;
+    }}
+    digitalWrite(nfb, LOW);//valve close
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (nfbstatus ==0){
+    checkvalve = true;
+    }}
+digitalWrite(sendback, HIGH);//valve open
+        checkvalve = false;
+  while(checkvalve == false){
+    valvecheck();
+    if (sendbackstatus ==1){
+    checkvalve = true;
+    } }
+  waiting(1);
+      lcd.setCursor(0, 3);
+    lcd.print("wasting NF       ");
+  unsigned long wastetime = snfftank *4.8*1000;//milliseconds to run pump
+  //Serial.print(wastetime);
+  hppump(1);
+  delay(wastetime);//wait for empty
+  hppump(0);
+  delay(5000);
+  waiting(500);
+  digitalWrite(sendback, LOW);
+        checkvalve = false;
+  while(checkvalve == false){//sendback closed
+    valvecheck();
+    if (sendbackstatus ==0){
+    checkvalve = true;
+    } }
+}
   uvdisinfect(0);
 
   checkvalve = false;
