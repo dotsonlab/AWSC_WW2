@@ -1265,7 +1265,7 @@ digitalWrite(sendback, HIGH);//valve open
     } }
   waiting(1);
       lcd.setCursor(0, 3);
-    lcd.print("wasting NF       ");
+    lcd.print("sendback NF       ");
   unsigned long wastetime = snfftank *4.8*1000;//milliseconds to run pump
   //Serial.print(wastetime);
   hppump(1);
