@@ -1241,7 +1241,7 @@ digitalWrite(waste, HIGH);//valve open
   
   
   }
-  else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
+  /*else if (wastecycle==0 && spretank<40){//if not waste day send back concentrate
     digitalWrite(nfa, HIGH);//valve open
         checkvalve = false;
   while(checkvalve == false){
@@ -1280,7 +1280,7 @@ digitalWrite(sendback, HIGH);//valve open
     if (sendbackstatus ==0){
     checkvalve = true;
     } }
-}
+}*/
   uvdisinfect(0);
 
   checkvalve = false;
