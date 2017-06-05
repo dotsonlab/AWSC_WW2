@@ -800,7 +800,21 @@ if (systemstate ==1){
   o3pump(0);
 } 
 }
-if (systemstate!=1 && ozonestatus==1){
+else if (systemstate ==3 && ozonestatus ==0){
+  o3pump(1);
+  delay(10000);
+  o3(1);
+  o3starttime=t;
+  o3time = 600000;
+}
+else if (systemstate ==2 && ozonestatus ==1){
+  o3starttime=t;
+  if (t-treattimes[2] > 600000){
+  o3(0);
+  delay(20000);
+  o3pump(0);}
+}
+else if (systemstate!=1 && ozonestatus==1){
   o3(0);
   delay(20000);
   delay(20000);
