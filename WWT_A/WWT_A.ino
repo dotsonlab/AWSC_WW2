@@ -807,6 +807,7 @@ else if (systemstate ==3 && ozonestatus ==0){
   o3starttime=t;
   o3time = 600000;
 }
+else if (systemstate ==3 && ozonestatus ==1){}
 else if (systemstate ==2 && ozonestatus ==1){
   o3starttime=t;
   if (t-treattimes[2] > 600000){
