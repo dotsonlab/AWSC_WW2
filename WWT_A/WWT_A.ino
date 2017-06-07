@@ -1473,10 +1473,11 @@ void regularday(){
   if (systemstate ==3){
     treattimes[1]=timnow;
     RO(81,1,0);//ro treatment no waste cycle
-    fixaverages(10);
+    
   }
   if (systemstate==2){
     treattimes[2]=timnow;
+    fixaverages(10);
     NF(81,1,0);//nf treatment no waste cycle
     fixaverages(10);
   }
@@ -1496,10 +1497,11 @@ void wasteday(){
   if (systemstate ==3){
     treattimes[1]=timnow;
     RO(85,1,1);
-    fixaverages(10);
+    
   }
   if (systemstate==2){
     treattimes[2]=timnow;
+    fixaverages(10);
     NF(85,1,1);
     fixaverages(10);
   }
@@ -1519,10 +1521,10 @@ void halfwasteday(){
   if (systemstate ==3){
     treattimes[1]=timnow;
     RO(85,1,0);
-    fixaverages(10);
   }
   if (systemstate==2){
     treattimes[2]=timnow;
+    fixaverages(10);
     NF(85,1,1);
     fixaverages(10);
   }
