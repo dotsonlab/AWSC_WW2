@@ -996,7 +996,7 @@ float targetflow=0.75;
     }
 
     hppump(0);
-    uvdisinfect(0);
+    //uvdisinfect(0);
     waiting(1);
     digitalWrite(wwrinse, LOW);
     while(checkvalve == false){ //wait for  valve to be closed
