@@ -810,7 +810,7 @@ else if (systemstate ==3 && ozonestatus ==0){
 else if (systemstate ==3 && ozonestatus ==1){}
 else if (systemstate ==2 && ozonestatus ==1){
   timenow();
-  if (timnow-treattimes[2] > 600000){
+  if (timnow-treattimes[2] > 600){
   o3(0);
   delay(20000);
   o3pump(0);}
