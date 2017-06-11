@@ -1134,7 +1134,7 @@ float targetflow=0.5;
     }
     delay(1000);
 
-    if (flw[9]>0.1 && flw[9]<=.5*targetflow && spotnf>100 &&pumpon==1 && sfeedp < 200){
+    if (flw[9]>=0 && flw[9]<=.5*targetflow && spotnf>100 &&pumpon==1 && sfeedp < 200){
       nfvalvecloseupflow(40);//close valve alot
       valvepos();
     }
