@@ -96,8 +96,8 @@ const int pump=7;
 
 //12v actuated ball valves
 //const int pretankvalve=27;
-const int Settle2SBR=26;  //this os Settle2SBR
-const int EQ2Settle=25;  // this is EQ2Settle
+const int Settle2SBR=29;  //this os Settle2SBR
+const int EQ2Settle=28;  // this is EQ2Settle
 
 /* Valves removed with removal of Ceramic MF
 
@@ -111,8 +111,8 @@ const int sendbackc=34;
 
 
 //const int prefiltvalve=30;
-const int SBRDecant=29;//SBRDecant
-const int SBRAir=28;//SBRAir
+const int SBRDecant=26;//SBRDecant
+const int SBRAir=25;//SBRAir
 
 const int roa=49;
 const int roac=47;
@@ -351,7 +351,6 @@ void SBRAironoff(int cmd){
       sbrairstatus=1;
     }
   }
-
 void o3pump(int cmd){//ozone pump on off
   if (cmd==0){
     digitalWrite(bubbleblast,LOW);
@@ -1354,13 +1353,14 @@ void SBRFill(int UVwarmup){
     uvdisinfect(1);
   }
   float highlvlEQ= 30;//inches
-  float lowlvlEQ= 5;//inches
+  float lowlvlEQ= 0;//inches
   if(ssbrtank<=80 && sSettletank>lowlvlEQ) {
     while(sSettletank>lowlvlEQ && ssbrtank<80){
-      digitalWrite(Sett2SBR, HIGH);
-      waiting(1);
+      Sett2SBR(1);
+      waiting(3000);
+      delay(100);
     }
-    digitalWrite(Sett2SBR, LOW);
+    Sett2SBR(0);
     waiting(1);
     delay(1000);
   }
@@ -1372,7 +1372,7 @@ void SBRDecantCF(){
   if(ssbrtank>=70 && snfftank<80) {
     while(ssbrtank>10 && snfftank<80){
       digitalWrite(SBRDecant, HIGH);
-      waiting(1);
+      waiting(3000);
     }
     digitalWrite(SBRDecant, LOW);
     waiting(1);
@@ -1400,13 +1400,13 @@ void SBRSettling(){
 void eqtosettlefill(){ //include 1hr full aeration in this function?
   waiting(1);
   float highlvlEQ= 30;//inches
-  float lowlvlEQ= 5;//inches
-  if(sEQtank>=highlvlEQ && sSettletank<=lowlvlEQ) {
+  float lowlvlEQ= 0;//inches
+  if(sEQtank>=lowlvlEQ && sSettletank<=highlvlEQ) {
     while(sSettletank<highlvlEQ && sEQtank>=lowlvlEQ){
-      digitalWrite(EQ2Settle, HIGH);
-      waiting(1);
+      EQ2Sett(1);
+      waiting(3000);
     }
-    digitalWrite(EQ2Settle, LOW);
+    EQ2Sett(0);
     waiting(1);
     delay(1000);
   }
@@ -1534,6 +1534,10 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 void loop() {
   waiting(60000);//sending serial data
   systemstate =1;
+  //eqtosettlefill();
+//  SBRFill(0);
+//SBRAironoff(1);
+SBRDecantCF();
   //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
   //NF(80,0,0);//target flow is .5
   //PRE(80,0);
