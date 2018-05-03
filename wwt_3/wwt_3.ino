@@ -10,7 +10,7 @@
 //BEGIN ---- library configuration
 Adafruit_AM2315 am2315;
 Adafruit_MCP9808 tempsensorac = Adafruit_MCP9808();
-Adafruit_MCP9808 tempsensordc = Adafruit_MCP9808();
+//not working?? Adafruit_MCP9808 tempsensordc = Adafruit_MCP9808();
 RTC_DS3231 rtc;
 //END ---- library configuration
 
@@ -24,7 +24,7 @@ char sensordatajunk[30];//A 30 byte character array to hold incoming data from t
 char *channel;                       //Char pointer used in string parsing
 char *cmd;
 float flw[9];
-float dctemp;
+float dctemp=0;
 float actemp;
 float outtemp;
 float blkpwr;
@@ -750,14 +750,14 @@ void power(){//power readings in amps?--needs more calculation probably
 }
 void temperature(){//reads temperature in both panels and the room
   //reads from 0x18 temperature sensor in DC panel
-  if (!tempsensordc.begin(0x18)) {
+  /*if (!tempsensordc.begin(0x18)) {
     Serial.println("Couldn't find MCP9808 DC!");
     while (1);
   }
   tempsensordc.shutdown_wake(0);
   dctemp = tempsensordc.readTempC();//dc temp read
   delay(250);
-  tempsensordc.shutdown_wake(1);
+  tempsensordc.shutdown_wake(1);*/
   //reads from 0x19 temperature sensor in AC panel
   if (!tempsensorac.begin(0x19)) {
     Serial.println("Couldn't find MCP9808 AC!");
@@ -842,8 +842,8 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
     lcd.print("UV Warmup");
     waiting(1);
     if (sbraeration==0){
-      while (t-uvontime< 900000){//warmup uv 15 min
-    waiting(10000);}
+    //  while (t-uvontime< 900000){//warmup uv 15 min
+    waiting(10000);//}
     }
     lcd.setCursor(0, 3);
     lcd.print("UV Ready     ");
@@ -860,8 +860,8 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
   if (wwrinsestatus !=0) {
     return;}
 
-  lcd.setCursor(0, 3);
-  lcd.print("all valves closed");
+  //lcd.setCursor(0, 3);
+  //lcd.print("all valves closed");
 
   digitalWrite(roa, HIGH);
   while(checkvalve == false){ //wait for valves to turn
@@ -1118,7 +1118,7 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
   nfcontrolopen();//open plug valve all the way
   hppump(1);
   pressures();
-  float targetflow=0.5;
+  float targetflow=1.3;
   while (sroftank< target && snfftank> 7){//(swwtank< 80 && sroftank> 5){
     waiting(10000);
     lcd.setCursor(0, 3);
@@ -1369,7 +1369,7 @@ void SBRDecantCF(){
   waiting(1);
   float highlvlEQ= 30;//inches
   float lowlvlEQ= 5;//inches
-  if(ssbrtank>=70 && snfftank<80) {
+  if(ssbrtank>=10 && snfftank<80) {
     while(ssbrtank>10 && snfftank<80){
       digitalWrite(SBRDecant, HIGH);
       waiting(3000);
@@ -1535,11 +1535,11 @@ void loop() {
   waiting(60000);//sending serial data
   systemstate =1;
   //eqtosettlefill();
-//  SBRFill(0);
+ // SBRFill(0);
 //SBRAironoff(1);
-SBRDecantCF();
-  //RO(15,1,1);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
-  //NF(80,0,0);//target flow is .5
+//SBRDecantCF();
+  //RO(81,0,0,0);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
+  //NF(81,0,0,0);//target flow is .5
   //PRE(80,0);
   //regularday();
   //while(1){};//error handling uv wont turn off if return is triggered during treatment
