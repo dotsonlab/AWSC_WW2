@@ -806,8 +806,7 @@ void o3calc(){//decides if ozone will be turned on or off or neither. based on t
     o3(0);
     delay(20000);
     o3pump(0);}
-  }
-  else if (systemstate!=1 && ozonestatus==1){
+    else if (systemstate!=1 && ozonestatus==1){
     o3(0);
     delay(20000);
     delay(20000);
@@ -843,7 +842,7 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
     waiting(1);
     if (sbraeration==0){
       while (t-uvontime< 900000){//warmup uv 15 min
-        waiting(10000);//}
+        waiting(10000);}
     }
     lcd.setCursor(0, 3);
     lcd.print("UV Ready     ");
