@@ -1512,6 +1512,7 @@ void halfwasteday(){
     eqtosettlefill();
     fixaverages(10);
   }
+  systemstate=3;
   if (systemstate ==3){
     treattimes[1]=timnow;
     RO(85,1,0,1);
