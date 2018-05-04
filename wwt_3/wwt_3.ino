@@ -1335,7 +1335,7 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
     if (nfastatus ==0){
       checkvalve = true;
     }
-  }
+  }}
   checkvalve = false;
   waiting(1);
   systemstate=1;
@@ -1355,8 +1355,9 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
     SBRAironoff(0);}
     lcd.setCursor(0, 3);
     lcd.print("still aerating SBR  ");
-  }}SBRAironoff(0);
-}}
+  }}
+  SBRAironoff(0);
+  }}
 void SBRFill(int UVwarmup){
   waiting(1);
   if (UVwarmup==1){
