@@ -942,7 +942,7 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
         SBRAironoff(0);}
       }
     }
-    SBRAironoff(0);
+
     hppump(0);
     rocontrolopen();//open plug valve for low pressure rinse
 
@@ -1062,7 +1062,7 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
   lcd.print("RO complete  ");
   float tnow = millis();
   if (sbraeration ==1){ //30 sec air control
-    while(tnow-sbraircyclestarttime>7200000){
+    while(tnow-sbraircyclestarttime<7200000){
     float tnow= millis();
     if (tnow-sbraircyclestarttime<7200000){//2hrs
       if (sbrairstatus==1 && tnow-sbrairontime>30000){
@@ -1172,6 +1172,16 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
       }
     }
   hppump(0);
+  if (sbraeration ==1){ //5 min air control
+    float  tnow= millis();
+    if (tnow-sbraircyclestarttime<7200000){//2hrs
+      if (sbrairstatus==1 && tnow-sbrairontime>300000){
+        SBRAironoff(0); }//turn off if it was on for 5 min
+      if (sbrairstatus==0 && tnow-sbrairofftime>300000){
+        SBRAironoff(1); }//turn on if it was off for 5 min
+    }
+    else if (tnow-sbraircyclestarttime>7200000){//2hrs
+    SBRAironoff(0);}
   nfcontrolopen();//open plup valve all the way
   SBRAironoff(0);
 
@@ -1333,7 +1343,7 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
   lcd.print("NF complete  ");
   if (sbraeration ==1){ //30 sec air control
     float tnow= millis();
-    while(tnow-sbraircyclestarttime>7200000){
+    while(tnow-sbraircyclestarttime<7200000){
     float tnow= millis();
     if (tnow-sbraircyclestarttime<7200000){//2hrs
       if (sbrairstatus==1 && tnow-sbrairontime>300000){
@@ -1353,7 +1363,7 @@ void SBRFill(int UVwarmup){
     uvdisinfect(1);
   }
   float highlvlEQ= 30;//inches
-  float lowlvlEQ= 0;//inches
+  float lowlvlEQ= 0.2;//inches
   if(ssbrtank<=80 && sSettletank>lowlvlEQ) {
     while(sSettletank>lowlvlEQ && ssbrtank<80){
       Sett2SBR(1);
@@ -1379,6 +1389,25 @@ void SBRDecantCF(){
     delay(1000);
   }
 }
+void SBRfullair(){
+  long duration=1*60*1000;//3hrs
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("air ");
+  waiting(1);
+  lcd.setCursor(0,1);
+  lcd.print(ssbrtank);lcd.print("gal  ");
+  float starttime = millis();
+  delay(100);
+  SBRAironoff(1);
+  while (((millis()-starttime)<duration)){
+    int timedisplay = round((duration-(millis()-starttime))/60/1000);
+    delay(10000);
+    waiting(5);
+  lcd.setCursor(0,1);
+  lcd.print(ssbrtank);lcd.print("gal  ");
+  lcd.print(timedisplay);lcd.print("min  ");} //2 min
+    SBRAironoff(0);}
 void SBRSettling(){
     long duration=3*60*1000;//3hrs
     lcd.clear();
@@ -1399,8 +1428,8 @@ void SBRSettling(){
   }
 void eqtosettlefill(){ //include 1hr full aeration in this function?
   waiting(1);
-  float highlvlEQ= 30;//inches
-  float lowlvlEQ= 0;//inches
+  float highlvlEQ= 28;//inches
+  float lowlvlEQ= 2;//inches
   if(sEQtank>=lowlvlEQ && sSettletank<=highlvlEQ) {
     while(sSettletank<highlvlEQ && sEQtank>=lowlvlEQ){
       EQ2Sett(1);
@@ -1436,6 +1465,7 @@ void regularday(){
     fixaverages(10);
     NF(81,1,0,1);//nf treatment no waste cycle
     fixaverages(10);
+    SBRfullair();
     SBRSettling();
     SBRDecantCF();
   }
@@ -1463,6 +1493,7 @@ void wasteday(){
     fixaverages(10);
     NF(85,1,0,1);
     fixaverages(10);
+    SBRfullair();
     SBRSettling();
     SBRDecantCF();
   }
@@ -1489,8 +1520,9 @@ void halfwasteday(){
     fixaverages(10);
     NF(85,1,0,1);
     fixaverages(10);
-      SBRSettling();
-      SBRDecantCF();
+    SBRfullair();
+    SBRSettling();
+    SBRDecantCF();
   }
   treattimes[3]=timnow;
   lcd.setCursor(0, 0);
