@@ -1461,7 +1461,7 @@ void wasteday(){
   if (systemstate==2){
     treattimes[2]=timnow;
     fixaverages(10);
-    NF(85,1,1,1);
+    NF(85,1,0,1);
     fixaverages(10);
     SBRSettling();
     SBRDecantCF();
@@ -1487,7 +1487,7 @@ void halfwasteday(){
   if (systemstate==2){
     treattimes[2]=timnow;
     fixaverages(10);
-    NF(85,1,1,1);
+    NF(85,1,0,1);
     fixaverages(10);
       SBRSettling();
       SBRDecantCF();
@@ -1538,7 +1538,7 @@ void loop() {
  // SBRFill(0);
 //SBRAironoff(1);
 //SBRDecantCF();
-  //RO(81,0,0,0);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
+  //fixaverages(20);//RO(81,0,0,0);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
   //NF(81,0,0,0);//target flow is .5
   //PRE(80,0);
   //regularday();
