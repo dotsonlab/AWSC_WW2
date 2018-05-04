@@ -842,8 +842,8 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
     lcd.print("UV Warmup");
     waiting(1);
     if (sbraeration==0){
-    //  while (t-uvontime< 900000){//warmup uv 15 min
-    waiting(10000);//}
+      while (t-uvontime< 900000){//warmup uv 15 min
+        waiting(10000);//}
     }
     lcd.setCursor(0, 3);
     lcd.print("UV Ready     ");
