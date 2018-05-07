@@ -726,7 +726,7 @@ void printdata(){//prints all data to serial port for data collection by raspber
   Serial.print("TandPD\t");Serial.print(outtemp,0);Serial.print("\t");Serial.print(actemp,0);Serial.print("\t");Serial.print(dctemp,0);Serial.print("\t");Serial.print(redpwr,1);Serial.print("\t");Serial.print(blkpwr,1);Serial.print("\t");Serial.println(timnow);
 
   Serial.print("Relays\t");Serial.print("P\t");Serial.print("BUB\t");Serial.print("O3\t");Serial.print("O3pump\t");Serial.print("UV\t");Serial.println("time");
-  Serial.print("RelayD\t");Serial.print(pumpon);Serial.print("\t");Serial.print(bubblerstatus);Serial.print("\t");Serial.print(ozonestatus);Serial.print("\t");Serial.print(bubbleblaststatus);Serial.print("\t");Serial.print(uvstatus);Serial.print("\t");Serial.println(timnow);
+  Serial.print("RelayD\t");Serial.print(pumpon);Serial.print("\t");Serial.print(sbrairstatus);Serial.print("\t");Serial.print(ozonestatus);Serial.print("\t");Serial.print(bubbleblaststatus);Serial.print("\t");Serial.print(uvstatus);Serial.print("\t");Serial.println(timnow);
 
   Serial.print("1valves\t");Serial.print("NFPOT\t");Serial.print("NFF\t");Serial.print("NFFT\t");Serial.print("GW\t");Serial.print("CFF\t");Serial.println("time");
   Serial.print("1valveD\t");Serial.print(spotnf);Serial.print("\t");Serial.print(nfbstatus);Serial.print("\t");Serial.print(nfastatus);Serial.print("\t");Serial.print(pretankstatus);Serial.print("\t");Serial.print(prefiltstatus);Serial.print("\t");Serial.println(timnow);
@@ -830,7 +830,7 @@ void waiting(unsigned long interval){//function to read and report everything at
     o3calc();//also check on ozone timer to see if it needs to be turned on or not
   }
 }
-void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycle is sendback
+void RO(int target, int rinsecycle, int wastecycle, int uviswarm){//wastecycle is sendback
   if (swwtank >= target && sroftank< 5) {//if water needs to be treated
     return;}
     lcd.setCursor(0, 0);
@@ -841,7 +841,7 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
     lcd.setCursor(0, 3);
     lcd.print("UV Warmup");
     waiting(1);
-    if (sbraeration==0){
+    if (uviswarm==0){
       while (t-uvontime< 900000){//warmup uv 15 min
         waiting(10000);}
     }
@@ -929,18 +929,6 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
       lcd.setCursor(0, 2);
       lcd.print("correct flow");
       valvepos();}
-
-      if (sbraeration ==1){ //30 sec air control
-        float tnow= millis();
-        if (tnow-sbraircyclestarttime<7200000){//2hrs
-          if (sbrairstatus==1 && tnow-sbrairontime>30000){
-            SBRAironoff(0); }//turn off if it was on for 30 sec
-          if (sbrairstatus==0 && tnow-sbrairofftime>120000){
-            SBRAironoff(1); }//turn on if it was off for 2 min
-        }
-        else if (tnow-sbraircyclestarttime>7200000){//2hrs
-        SBRAironoff(0);}
-      }
     }
 
     hppump(0);
@@ -1060,26 +1048,14 @@ void RO(int target, int rinsecycle, int wastecycle, int sbraeration){//wastecycl
   systemstate=2;
   lcd.setCursor(0, 3);
   lcd.print("RO complete  ");
-  float tnow = millis();
-  if (sbraeration ==1){ //30 sec air control
-    while(tnow-sbraircyclestarttime<7200000){
-    float tnow= millis();
-    if (tnow-sbraircyclestarttime<7200000){//2hrs
-      if (sbrairstatus==1 && tnow-sbrairontime>30000){
-        SBRAironoff(0); }//turn off if it was on for 30 sec
-      if (sbrairstatus==0 && tnow-sbrairofftime>120000){
-        SBRAironoff(1); }//turn on if it was off for 2 min
-    }
-    else if (tnow-sbraircyclestarttime>7200000){//2hrs
-    SBRAironoff(0);}
-    lcd.setCursor(0, 3);
-    lcd.print("still aerating SBR  ");
-  }}SBRAironoff(0);
-}
+ SBRAironoff(0);
+ }
 void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine if need to run rinse of waste cycles
   if (sroftank>= target && snfftank< 5) {//if water needs to be treated, returns if not
     return;}
-
+    if (sbraeration==1){
+      SBRAironoff(1);
+    }
   lcd.setCursor(0, 0);
   lcd.print("NF Treatment");
   closeallvalves();
@@ -1159,29 +1135,8 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
       lcd.setCursor(0, 2);
       lcd.print("correct flow");
       valvepos();}
-      if (sbraeration ==1){ //5 min air control
-        float  tnow= millis();
-        if (tnow-sbraircyclestarttime<7200000){//2hrs
-          if (sbrairstatus==1 && tnow-sbrairontime>300000){
-            SBRAironoff(0); }//turn off if it was on for 5 min
-          if (sbrairstatus==0 && tnow-sbrairofftime>300000){
-            SBRAironoff(1); }//turn on if it was off for 5 min
-        }
-        else if (tnow-sbraircyclestarttime>7200000){//2hrs
-        SBRAironoff(0);}
-      }
     }
   hppump(0);
-  if (sbraeration ==1){ //5 min air control
-    float  tnow= millis();
-    if (tnow-sbraircyclestarttime<7200000){//2hrs
-      if (sbrairstatus==1 && tnow-sbrairontime>300000){
-        SBRAironoff(0); }//turn off if it was on for 5 min
-      if (sbrairstatus==0 && tnow-sbrairofftime>300000){
-        SBRAironoff(1); }//turn on if it was off for 5 min
-    }
-    else if (tnow-sbraircyclestarttime>7200000){//2hrs
-    SBRAironoff(0);}
   nfcontrolopen();//open plup valve all the way
   SBRAironoff(0);
 
@@ -1341,23 +1296,8 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
   systemstate=1;
   lcd.setCursor(0, 3);
   lcd.print("NF complete  ");
-  if (sbraeration ==1){ //30 sec air control
-    float tnow= millis();
-    while(tnow-sbraircyclestarttime<7200000){
-    float tnow= millis();
-    if (tnow-sbraircyclestarttime<7200000){//2hrs
-      if (sbrairstatus==1 && tnow-sbrairontime>300000){
-        SBRAironoff(0); }//turn off if it was on for 30 sec
-      if (sbrairstatus==0 && tnow-sbrairofftime>300000){
-        SBRAironoff(1); }//turn on if it was off for 2 min
-    }
-    else if (tnow-sbraircyclestarttime>7200000){//2hrs
-    SBRAironoff(0);}
-    lcd.setCursor(0, 3);
-    lcd.print("still aerating SBR  ");
-  }}
-  SBRAironoff(0);
-  }}
+    SBRAironoff(0);
+  }
 void SBRFill(int UVwarmup){
   waiting(1);
   if (UVwarmup==1){
@@ -1409,8 +1349,32 @@ void SBRfullair(){
   lcd.print(ssbrtank);lcd.print("gal  ");
   lcd.print(timedisplay);lcd.print("min  ");} //2 min
     SBRAironoff(0);}
+void SBRthirtysecair(){
+  sbraircyclestarttime=millis();
+    float  tnow= millis();
+    tnow= millis();
+  while (tnow-sbraircyclestarttime<7200000){//2hrs
+    delay(1000);
+    tnow= millis();
+      if (sbrairstatus==1 && tnow-sbrairontime>30000){
+        SBRAironoff(0); }//turn off if it was on for 30sec
+      if (sbrairstatus==0 && tnow-sbrairofftime>120000){
+        SBRAironoff(1); }}//turn on if it was off for 2 min
+    SBRAironoff(0);}
+void SBRfiveminair(){
+  sbraircyclestarttime=millis();
+    delay(1000);
+    float  tnow= millis();
+    tnow= millis();
+  while (tnow-sbraircyclestarttime<7200000){//2hrs
+    tnow= millis();
+      if (sbrairstatus==1 && tnow-sbrairontime>300000){
+        SBRAironoff(0); }//turn off if it was on for 5 min
+      if (sbrairstatus==0 && tnow-sbrairofftime>300000){
+        SBRAironoff(1); }//turn on if it was off for 5 min
+    SBRAironoff(0);}}
 void SBRSettling(){
-    long duration=3*60*1000;//3hrs
+    long duration=2*60*60*1000;//3hrs
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Settle ");
@@ -1427,8 +1391,11 @@ void SBRSettling(){
     lcd.print(ssbrtank);lcd.print("gal  ");
     lcd.print(timedisplay);lcd.print("min  ");} //2 min
   }
-void eqtosettlefill(){ //include 1hr full aeration in this function?
+void eqtosettlefill(int UVwarmup){ //include 1hr full aeration in this function?
   waiting(1);
+  if (UVwarmup==1){
+    uvdisinfect(1);
+  }
   float highlvlEQ= 28;//inches
   float lowlvlEQ= 2;//inches
   if(sEQtank>=lowlvlEQ && sSettletank<=highlvlEQ) {
@@ -1453,20 +1420,22 @@ void regularday(){
   uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    SBRFill(1);
-    eqtosettlefill();
+    SBRFill(0);
+    eqtosettlefill(0);
+    SBRthirtysecair();
+    SBRfiveminair();
     fixaverages(10);
-  }
+  }systemstate=3;
   if (systemstate ==3){
     treattimes[1]=timnow;
-    RO(81,1,0,1);//ro treatment no waste cycle
+    RO(81,1,0,0);//ro treatment no waste cycle
   }
   if (systemstate==2){
     treattimes[2]=timnow;
     fixaverages(10);
     NF(81,1,0,1);//nf treatment no waste cycle
     fixaverages(10);
-    SBRfullair();
+  //  SBRfullair();
     SBRSettling();
     SBRDecantCF();
   }
@@ -1480,21 +1449,21 @@ void wasteday(){
   uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    SBRFill(1);
-    eqtosettlefill();
+    SBRFill(0);
+    eqtosettlefill(0);
+    SBRthirtysecair();
+    SBRfiveminair();
     fixaverages(10);
-  }
+  }systemstate=3;
   if (systemstate ==3){
     treattimes[1]=timnow;
-    RO(85,1,1,1);
-
+    RO(85,1,1,0);
   }
   if (systemstate==2){
     treattimes[2]=timnow;
     fixaverages(10);
     NF(85,1,0,1);
     fixaverages(10);
-    SBRfullair();
     SBRSettling();
     SBRDecantCF();
   }
@@ -1509,7 +1478,7 @@ void halfwasteday(){
   if (systemstate==0){
     treattimes[0]=timnow;
     SBRFill(1);
-    eqtosettlefill();
+    eqtosettlefill(1);
     fixaverages(10);
   }
   systemstate=3;
@@ -1556,7 +1525,7 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
       SBRFill(0);//command for pretreatment without rinse
     }
     if (incomingByte ==String("CFwithRinse")){
-      eqtosettlefill();//command for pretreatment with rinse
+      eqtosettlefill(0);//command for pretreatment with rinse
     }
     if (incomingByte == String("HalfWasteDay")){
       halfwasteday();
