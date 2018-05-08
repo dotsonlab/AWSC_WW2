@@ -1371,14 +1371,14 @@ void SBRfiveminair(){
     SBRAironoff(1);
   sbrairontime=tnow;
     tnow= millis();
-  while (tnow-sbraircyclestarttime<7200000){//2hrs
+  while (tnow-sbraircyclestarttime<3600000){//2hrs
     waiting(10000);
     tnow= millis();
       if (sbrairstatus==1 && tnow-sbrairontime>300000){
         SBRAironoff(0); }//turn off if it was on for 5 min
       if (sbrairstatus==0 && tnow-sbrairofftime>300000){
-        SBRAironoff(1); }//turn on if it was off for 5 min
-    SBRAironoff(0);}}
+        SBRAironoff(1); }}//turn on if it was off for 5 min
+    SBRAironoff(0);}
 void SBRSettling(){
     long duration=2*60*60*1000;//3hrs
     lcd.clear();
@@ -1429,6 +1429,7 @@ void regularday(){
     SBRFill(0);
     eqtosettlefill(0);
     SBRthirtysecair();
+    SBRfiveminair();
     SBRfiveminair();
     fixaverages(10);
   }systemstate=3;
@@ -1547,7 +1548,6 @@ void loop() {
   int xx=1;
   while(xx==1){
     xx=2;
-    SBRthirtysecair();
     SBRfiveminair();
     fixaverages(10);
     uvdisinfect(1);
