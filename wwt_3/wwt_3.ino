@@ -1428,12 +1428,14 @@ void regularday(){
   }systemstate=3;
   if (systemstate ==3){
     treattimes[1]=timnow;
+    uvdisinfect(1);
     RO(81,1,0,0);//ro treatment no waste cycle
+    uvdisinfect(0);
   }
   if (systemstate==2){
     treattimes[2]=timnow;
     fixaverages(10);
-    NF(81,1,0,1);//nf treatment no waste cycle
+    NF(81,1,0,0);//nf treatment no waste cycle
     fixaverages(10);
   //  SBRfullair();
     SBRSettling();
@@ -1536,8 +1538,20 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 //******     BEGIN LOOP     ******//
 void loop() {
   waiting(60000);//sending serial data
-  systemstate =1;
-  //eqtosettlefill();
+  int xx=1;
+  while(xx==1){
+    xx=2;
+    SBRthirtysecair();
+    SBRfiveminair();
+    fixaverages(10);
+    uvdisinfect(1);
+    RO(81,1,0,0);//ro treatment no waste cycle
+    uvdisinfect(0);
+    fixaverages(10);
+    NF(81,1,0,0);//nf treatment no waste cycle
+    fixaverages(10);
+    SBRSettling();
+    SBRDecantCF();}//eqtosettlefill();
  // SBRFill(0);
 //SBRAironoff(1);
 //SBRDecantCF();
