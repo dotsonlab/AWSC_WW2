@@ -1368,7 +1368,7 @@ void SBRfiveminair(){
     delay(1000);
     float  tnow= millis();
     SBRAironoff(1);
-  sbrairontime=tnow
+  sbrairontime=tnow;
     tnow= millis();
   while (tnow-sbraircyclestarttime<7200000){//2hrs
     tnow= millis();
