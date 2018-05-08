@@ -1356,6 +1356,7 @@ void SBRthirtysecair(){
   sbrairontime=tnow;
   tnow= millis();
   while (tnow-sbraircyclestarttime<7200000){//2hrs
+    waiting(10000);
     delay(1000);
     tnow= millis();
       if (sbrairstatus==1 && tnow-sbrairontime>30000){
@@ -1371,6 +1372,7 @@ void SBRfiveminair(){
   sbrairontime=tnow;
     tnow= millis();
   while (tnow-sbraircyclestarttime<7200000){//2hrs
+    waiting(10000);
     tnow= millis();
       if (sbrairstatus==1 && tnow-sbrairontime>300000){
         SBRAironoff(0); }//turn off if it was on for 5 min
