@@ -1352,7 +1352,9 @@ void SBRfullair(){
 void SBRthirtysecair(){
   sbraircyclestarttime=millis();
     float  tnow= millis();
-    tnow= millis();
+    SBRAironoff(1);
+  sbrairontime=tnow;
+  tnow= millis();
   while (tnow-sbraircyclestarttime<7200000){//2hrs
     delay(1000);
     tnow= millis();
@@ -1365,6 +1367,8 @@ void SBRfiveminair(){
   sbraircyclestarttime=millis();
     delay(1000);
     float  tnow= millis();
+    SBRAironoff(1);
+  sbrairontime=tnow
     tnow= millis();
   while (tnow-sbraircyclestarttime<7200000){//2hrs
     tnow= millis();
