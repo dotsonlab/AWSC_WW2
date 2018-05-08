@@ -1417,7 +1417,7 @@ void fixaverages(int number){//takes 10 readings to stabalize values
 void regularday(){
   fixaverages(10);
   systemstate=0;
-  uvdisinfect(1);
+  //uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
     SBRFill(0);
