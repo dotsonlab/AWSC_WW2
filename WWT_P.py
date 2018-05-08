@@ -322,7 +322,8 @@ def _quit():
     else:
         print "Quit Program Canceled"
 
-root = Tk.Tk()root.wm_title("WWT Control")
+-root = Tk.Tk()
+-root.wm_title("WWT Control")
 RegButton = Tk.Button(master=root, text='Regular Day', command=partial(_RegularDay,'MANUAL ACTIVATED: '))
 RegButton.grid(row=0, column=4)
 RegButton.config(height = 5, width = 16)
