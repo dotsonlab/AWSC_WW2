@@ -194,6 +194,7 @@ void setup() {
   //120v relays
   pinMode(bubbleblast, OUTPUT);
   pinMode(bubbler, OUTPUT);//alwayson
+  digitalWrite(bubbler, HIGH);
   pinMode(uv, OUTPUT);
   pinMode(ozone, OUTPUT);
   pinMode(pump, OUTPUT);
