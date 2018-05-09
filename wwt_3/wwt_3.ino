@@ -816,6 +816,24 @@ void o3calc(){//decides if ozone will be turned on or off or neither. based on t
     delay(20000);//delay 1min
     o3pump(0);
   }}
+void aircalc(){//decides if ozone will be turned on or off or neither. based on timers and tank level
+    float w= millis();
+    if (systemstate ==1){
+      if (w- sbrairofftime > 3300000 && sbrairstatus ==0){
+      SBRAironoff(1);
+      delay(10000);
+    }
+      if (w - sbrairontime >= 300000 && sbrairstatus ==1){
+        SBRAironoff(0);
+        sbrairofftime=millis();
+      delay(10000);
+    }}
+    else {
+      SBRAironoff(0);
+      sbrairofftime=millis();
+      delay(10000);
+    }
+    }
 void waiting(unsigned long interval){//function to read and report everything at given intervals
   t= millis();
   if (t-oldt > interval){
@@ -833,6 +851,7 @@ void waiting(unsigned long interval){//function to read and report everything at
   }
 }
 void RO(int target, int rinsecycle, int wastecycle, int uviswarm){//wastecycle is sendback
+  SBRAironoff(1);
   if (swwtank >= target && sroftank< 5) {//if water needs to be treated
     return;}
     lcd.setCursor(0, 0);
@@ -932,10 +951,9 @@ void RO(int target, int rinsecycle, int wastecycle, int uviswarm){//wastecycle i
       lcd.print("correct flow");
       valvepos();}
     }
-
     hppump(0);
     rocontrolopen();//open plug valve for low pressure rinse
-
+    SBRAironoff(0);
     checkvalve = false;
     digitalWrite(roa, LOW);//tank
     while(checkvalve == false){ //wait for valves to turn
@@ -1295,7 +1313,7 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
   }}
   checkvalve = false;
   waiting(1);
-  systemstate=1;
+  //systemstate=1;
   lcd.setCursor(0, 3);
   lcd.print("NF complete  ");
     SBRAironoff(0);
@@ -1455,6 +1473,7 @@ void regularday(){
   treattimes[3]=timnow;
   lcd.setCursor(0, 0);
   lcd.print("Treatment complete  ");
+  systemstate=1;
 }
 void wasteday(){
   fixaverages(10);
@@ -1483,6 +1502,7 @@ void wasteday(){
   treattimes[3]=timnow;
   lcd.setCursor(0, 0);
   lcd.print("Waste created ");
+  systemstate=1;
 }
 void halfwasteday(){
   fixaverages(10);
@@ -1511,6 +1531,7 @@ void halfwasteday(){
   treattimes[3]=timnow;
   lcd.setCursor(0, 0);
   lcd.print("Waste created ");
+  systemstate=1;
 }
 //******     END FUNCTIONS     ******//
 void serialEvent() {   //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
@@ -1549,17 +1570,19 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 //******     BEGIN LOOP     ******//
 void loop() {
   waiting(60000);//sending serial data
+  delay(10000);
+  aircalc();
   while(xx==1){
     xx=2;
     /*SBRfiveminair();
     fixaverages(10);
     uvdisinfect(1);
-    SBRAironoff(1);
+    SBRAironoff(1);*/
     RO(81,1,0,0);//ro treatment no waste cycle
     SBRAironoff(0);
     uvdisinfect(0);
     fixaverages(10);
-    NF(81,1,0,0);*///nf treatment no waste cycle
+    NF(81,1,0,0);//nf treatment no waste cycle
     fixaverages(10);
     SBRSettling();
     SBRDecantCF();}//eqtosettlefill();
