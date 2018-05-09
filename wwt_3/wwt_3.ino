@@ -1545,13 +1545,15 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 //******     BEGIN LOOP     ******//
 void loop() {
   waiting(60000);//sending serial data
-  int xx=1;
+  int xx=2;
   while(xx==1){
     xx=2;
     SBRfiveminair();
     fixaverages(10);
     uvdisinfect(1);
+    SBRAironoff(1);
     RO(81,1,0,0);//ro treatment no waste cycle
+    SBRAironoff(0);
     uvdisinfect(0);
     fixaverages(10);
     NF(81,1,0,0);//nf treatment no waste cycle
