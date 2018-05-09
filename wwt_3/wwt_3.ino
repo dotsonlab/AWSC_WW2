@@ -79,6 +79,7 @@ int bubblerstatus=0;
 int uvstatus=0;
 int ozonestatus=0;
 int pumpon=0;
+int xx=1;
 //END ---- defined variables
 
 //BEGIN ---- Pin definitions
@@ -1233,7 +1234,7 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
 
 
   }
-  else if (wastecycle==0 && ssbrtank<40){//if not waste day send back concentrate
+  else if (wastecycle==0 && ssbrtank<85){//if not waste day send back concentrate
     digitalWrite(nfa, HIGH);//valve open
         checkvalve = false;
   while(checkvalve == false){
@@ -1380,7 +1381,7 @@ void SBRfiveminair(){
         SBRAironoff(1); }}//turn on if it was off for 5 min
     SBRAironoff(0);}
 void SBRSettling(){
-    long duration=2*60*60*1000;//3hrs
+    float duration=2*60*60*1000;//3hrs
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Settle ");
@@ -1389,8 +1390,10 @@ void SBRSettling(){
     lcd.print(ssbrtank);lcd.print("gal  ");
     float starttime = millis();
     delay(100);
-    while (((millis()-starttime)<duration)){
-      int timedisplay = round((duration-(millis()-starttime))/60/1000);
+    int tnow=millis();
+    while (((tnow-starttime)<duration)){
+      tnow=millis();
+      int timedisplay = round((duration-(tnow-starttime))/60/1000);
       delay(10000);
       waiting(5);
     lcd.setCursor(0,1);
@@ -1545,10 +1548,9 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
 //******     BEGIN LOOP     ******//
 void loop() {
   waiting(60000);//sending serial data
-  int xx=2;
   while(xx==1){
     xx=2;
-    SBRfiveminair();
+    /*SBRfiveminair();
     fixaverages(10);
     uvdisinfect(1);
     SBRAironoff(1);
@@ -1556,7 +1558,7 @@ void loop() {
     SBRAironoff(0);
     uvdisinfect(0);
     fixaverages(10);
-    NF(81,1,0,0);//nf treatment no waste cycle
+    NF(81,1,0,0);*///nf treatment no waste cycle
     fixaverages(10);
     SBRSettling();
     SBRDecantCF();}//eqtosettlefill();
