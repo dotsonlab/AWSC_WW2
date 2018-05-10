@@ -1587,7 +1587,7 @@ void loop() {
     SBRSettling();
     SBRDecantCF();}
     */
- //SBRFill(0);
+  }//SBRFill(0);
 //SBRAironoff(1);
 //SBRDecantCF();
   //fixaverages(20);//RO(81,0,0,0);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
