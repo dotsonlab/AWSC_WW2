@@ -1409,7 +1409,7 @@ void SBRSettling(){
     lcd.print(ssbrtank);lcd.print("gal  ");
     float starttime = millis();
     delay(100);
-    int tnow=millis();
+    float tnow=millis();
     while (((tnow-starttime)<duration)){
       tnow=millis();
       int timedisplay = round((duration-(tnow-starttime))/60/1000);
