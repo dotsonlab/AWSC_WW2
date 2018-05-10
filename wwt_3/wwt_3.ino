@@ -1577,7 +1577,7 @@ void loop() {
     /*SBRfiveminair();
     fixaverages(10);
     uvdisinfect(1);
-    SBRAironoff(1);*/
+    SBRAironoff(1);
     RO(81,1,0,0);//ro treatment no waste cycle
     SBRAironoff(0);
     uvdisinfect(0);
@@ -1585,8 +1585,9 @@ void loop() {
     NF(81,1,0,0);//nf treatment no waste cycle
     fixaverages(10);
     SBRSettling();
-    SBRDecantCF();}//eqtosettlefill();
- // SBRFill(0);
+    SBRDecantCF();}
+    */
+ //SBRFill(0);
 //SBRAironoff(1);
 //SBRDecantCF();
   //fixaverages(20);//RO(81,0,0,0);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
