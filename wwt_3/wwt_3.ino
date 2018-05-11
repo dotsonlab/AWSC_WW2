@@ -1410,7 +1410,7 @@ void SBRSettling(){
     unsigned long starttime = millis();
     delay(100);
     unsigned long tnow=millis();
-    while (((tnow-starttime)<duration)){
+    while ((tnow-starttime)<duration){
       tnow=millis();
       int timedisplay = round((duration-(tnow-starttime))/60/1000);
       delay(10000);
