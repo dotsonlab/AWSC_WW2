@@ -1340,8 +1340,8 @@ void SBRDecantCF(){
   waiting(1);
   float highlvlEQ= 30;//inches
   float lowlvlEQ= 5;//inches
-  if(ssbrtank>=10 && snfftank<80) {
-    while(ssbrtank>10 && snfftank<80){
+  if(ssbrtank>=14 && snfftank<80) {
+    while(ssbrtank>14 && snfftank<80){
       digitalWrite(SBRDecant, HIGH);
       waiting(3000);
     }
