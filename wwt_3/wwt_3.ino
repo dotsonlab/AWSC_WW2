@@ -1400,18 +1400,19 @@ void SBRfiveminair(){
         SBRAironoff(1); }}//turn on if it was off for 5 min
     SBRAironoff(0);}
 void SBRSettling(){
-    float duration=2*60*60*1000;//3hrs
+    float duration=2*60*60;//3hrs
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Settle ");
     waiting(1);
     lcd.setCursor(0,1);
     lcd.print(ssbrtank);lcd.print("gal  ");
-    unsigned long starttime = millis();
+    unsigned long starttime = timnow;
     delay(100);
-    unsigned long tnow=millis();
+    waiting(1);
+    unsigned long tnow=timnow;
     while ((tnow-starttime)<duration){
-      tnow=millis();
+      tnow=timnow;
       int timedisplay = round((duration-(tnow-starttime))/60/1000);
       delay(10000);
       waiting(5);
