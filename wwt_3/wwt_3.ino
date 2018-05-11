@@ -1,4 +1,4 @@
-//BEGIN ---- included libraries
+unsigned long tnow//BEGIN ---- included libraries
 #include <Wire.h>
 #include <LiquidTWI.h>
   LiquidTWI lcd(0);
@@ -1320,9 +1320,9 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
   }
 void SBRFill(int UVwarmup){
   waiting(1);
-  if (UVwarmup==1){
-    uvdisinfect(1);
-  }
+  //if (UVwarmup==1){
+    //uvdisinfect(1);
+  //}
   float highlvlEQ= 30;//inches
   float lowlvlEQ= 0.2;//inches
   if(ssbrtank<=80 && sSettletank>lowlvlEQ) {
@@ -1358,7 +1358,7 @@ void SBRfullair(){
   waiting(1);
   lcd.setCursor(0,1);
   lcd.print(ssbrtank);lcd.print("gal  ");
-  float starttime = millis();
+  unsigned long starttime = millis();
   delay(100);
   SBRAironoff(1);
   while (((millis()-starttime)<duration)){
@@ -1371,7 +1371,7 @@ void SBRfullair(){
     SBRAironoff(0);}
 void SBRthirtysecair(){
   sbraircyclestarttime=millis();
-    float  tnow= millis();
+    unsigned long tnow= millis();
     SBRAironoff(1);
   sbrairontime=tnow;
   tnow= millis();
@@ -1387,7 +1387,7 @@ void SBRthirtysecair(){
 void SBRfiveminair(){
   sbraircyclestarttime=millis();
     delay(1000);
-    float  tnow= millis();
+    unsigned long tnow= millis();
     SBRAironoff(1);
   sbrairontime=tnow;
     tnow= millis();
@@ -1407,9 +1407,9 @@ void SBRSettling(){
     waiting(1);
     lcd.setCursor(0,1);
     lcd.print(ssbrtank);lcd.print("gal  ");
-    float starttime = millis();
+    unsigned long starttime = millis();
     delay(100);
-    float tnow=millis();
+    unsigned long tnow=millis();
     while (((tnow-starttime)<duration)){
       tnow=millis();
       int timedisplay = round((duration-(tnow-starttime))/60/1000);
@@ -1421,9 +1421,9 @@ void SBRSettling(){
   }
 void eqtosettlefill(int UVwarmup){ //include 1hr full aeration in this function?
   waiting(1);
-  if (UVwarmup==1){
-    uvdisinfect(1);
-  }
+  //if (UVwarmup==1){
+    //uvdisinfect(1);
+  //}
   float highlvlEQ= 28;//inches
   float lowlvlEQ= 2;//inches
   if(sEQtank>=lowlvlEQ && sSettletank<=highlvlEQ) {
@@ -1460,6 +1460,7 @@ void regularday(){
     uvdisinfect(1);
     RO(81,1,0,0);//ro treatment no waste cycle
     uvdisinfect(0);
+    systemstate=2;
   }
   if (systemstate==2){
     treattimes[2]=timnow;
@@ -1485,16 +1486,20 @@ void wasteday(){
     eqtosettlefill(0);
     SBRthirtysecair();
     SBRfiveminair();
+    SBRfiveminair();
     fixaverages(10);
   }systemstate=3;
   if (systemstate ==3){
     treattimes[1]=timnow;
-    RO(85,1,1,0);
+      uvdisinfect(1);
+      RO(85,1,1,0);
+      uvdisinfect(0);
+      systemstate=2;
   }
   if (systemstate==2){
     treattimes[2]=timnow;
     fixaverages(10);
-    NF(85,1,0,1);
+    NF(85,1,0,0);
     fixaverages(10);
     SBRSettling();
     SBRDecantCF();
@@ -1510,19 +1515,22 @@ void halfwasteday(){
   uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    SBRFill(1);
-    eqtosettlefill(1);
+    SBRFill(0);
+    eqtosettlefill(0);
     fixaverages(10);
   }
   systemstate=3;
   if (systemstate ==3){
     treattimes[1]=timnow;
-    RO(85,1,0,1);
+    uvdisinfect(1);
+    RO(85,1,0,0);
+    uvdisinfect(1);
+    systemstate=2;
   }
   if (systemstate==2){
     treattimes[2]=timnow;
     fixaverages(10);
-    NF(85,1,0,1);
+    NF(85,1,0,0);
     fixaverages(10);
     SBRfullair();
     SBRSettling();
@@ -1582,11 +1590,11 @@ void loop() {
     SBRAironoff(0);
     uvdisinfect(0);
     fixaverages(10);
-    NF(81,1,0,0);//nf treatment no waste cycle
+    NF(81,1,0,0);*///nf treatment no waste cycle
     fixaverages(10);
     SBRSettling();
     SBRDecantCF();}
-    */
+
   }//SBRFill(0);
 //SBRAironoff(1);
 //SBRDecantCF();
