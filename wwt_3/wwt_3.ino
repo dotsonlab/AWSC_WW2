@@ -1,4 +1,4 @@
-unsigned long tnow//BEGIN ---- included libraries
+//BEGIN ---- included libraries
 #include <Wire.h>
 #include <LiquidTWI.h>
   LiquidTWI lcd(0);
@@ -1603,5 +1603,5 @@ void loop() {
   //PRE(80,0);
   //regularday();
   //while(1){};//error handling uv wont turn off if return is triggered during treatment
-}
+//}
 //******     END LOOP     ******//
