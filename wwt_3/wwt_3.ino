@@ -1413,7 +1413,7 @@ void SBRSettling(){
     unsigned long tnow=timnow;
     while ((tnow-starttime)<duration){
       tnow=timnow;
-      int timedisplay = round((duration-(tnow-starttime))/60/1000);
+      int timedisplay = round((duration-(tnow-starttime))/60);
       delay(10000);
       waiting(5);
     lcd.setCursor(0,1);
