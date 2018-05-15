@@ -1375,8 +1375,19 @@ void SBRthirtysecair(){
     SBRAironoff(1);
   sbrairontime=tnow;
   tnow= millis();
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("30sec Air    ");
+  waiting(1);
+  lcd.setCursor(0,1);
+  lcd.print(ssbrtank);lcd.print("gal  ");
   while (tnow-sbraircyclestarttime<7200000){//2hrs
-    waiting(10000);
+    int timedisplay = round((7200000-(tnow-sbraircyclestarttime))/60/1000);
+    delay(1000);
+    waiting(5);
+  lcd.setCursor(0,1);
+  lcd.print(ssbrtank);lcd.print("gal  ");
+  lcd.print(timedisplay);lcd.print("min  ");
     delay(1000);
     tnow= millis();
       if (sbrairstatus==1 && tnow-sbrairontime>30000){
@@ -1388,11 +1399,22 @@ void SBRfiveminair(){
   sbraircyclestarttime=millis();
     delay(1000);
     unsigned long tnow= millis();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("5min Air    ");
+    waiting(1);
+    lcd.setCursor(0,1);
+    lcd.print(ssbrtank);lcd.print("gal  ");
     SBRAironoff(1);
   sbrairontime=tnow;
     tnow= millis();
   while (tnow-sbraircyclestarttime<3600000){//2hrs
-    waiting(10000);
+    int timedisplay = round((3600000-(tnow-sbraircyclestarttime))/60/1000);
+    delay(1000);
+    waiting(5);
+  lcd.setCursor(0,1);
+  lcd.print(ssbrtank);lcd.print("gal  ");
+  lcd.print(timedisplay);lcd.print("min  ");waiting(10000);
     tnow= millis();
       if (sbrairstatus==1 && tnow-sbrairontime>300000){
         SBRAironoff(0); }//turn off if it was on for 5 min
@@ -1480,7 +1502,6 @@ void regularday(){
 void wasteday(){
   fixaverages(10);
   systemstate=0;
-  uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
     SBRFill(0);
@@ -1591,18 +1612,10 @@ void loop() {
     SBRAironoff(0);
     uvdisinfect(0);
     fixaverages(10);
-    NF(81,1,0,0);*///nf treatment no waste cycle
+    NF(81,1,0,0);//nf treatment no waste cycle
     fixaverages(10);
     SBRSettling();
-    SBRDecantCF();}
-
-  }//SBRFill(0);
-//SBRAironoff(1);
-//SBRDecantCF();
-  //fixaverages(20);//RO(81,0,0,0);//target then 1 for rinse cycle (put 0 for no rinse) then 1 for waste (0 for no waste)
-  //NF(81,0,0,0);//target flow is .5
-  //PRE(80,0);
-  //regularday();
-  //while(1){};//error handling uv wont turn off if return is triggered during treatment
-//}
+    SBRDecantCF();*/
+  }
+  }
 //******     END LOOP     ******//
