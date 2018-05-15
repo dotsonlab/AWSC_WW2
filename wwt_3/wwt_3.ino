@@ -1319,6 +1319,9 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
     SBRAironoff(0);
   }
 void SBRFill(int UVwarmup){
+    lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Settle 2 SBR Fill");
   waiting(1);
   //if (UVwarmup==1){
     //uvdisinfect(1);
@@ -1337,6 +1340,9 @@ void SBRFill(int UVwarmup){
   }
 }
 void SBRDecantCF(){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("SBR Decant    ");
   waiting(1);
   float highlvlEQ= 30;//inches
   float lowlvlEQ= 5;//inches
@@ -1442,8 +1448,11 @@ void SBRSettling(){
     lcd.print(ssbrtank);lcd.print("gal  ");
     lcd.print(timedisplay);lcd.print("min  ");} //2 min
   }
-void eqtosettlefill(int UVwarmup){ //include 1hr full aeration in this function?
+void eqtosettlefill(int UVwarmup){
   waiting(1);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("EQ to SettleTank ");
   //if (UVwarmup==1){
     //uvdisinfect(1);
   //}
