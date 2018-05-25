@@ -1318,18 +1318,15 @@ void NF(int target, int rinsecycle, int wastecycle, int sbraeration){//determine
   lcd.print("NF complete  ");
     SBRAironoff(0);
   }
-void SBRFill(int UVwarmup){
+void SBRFill(int filllevel){
     lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Settle 2 SBR Fill");
   waiting(1);
-  //if (UVwarmup==1){
-    //uvdisinfect(1);
-  //}
   float highlvlEQ= 30;//inches
   float lowlvlEQ= 0.2;//inches
-  if(ssbrtank<=80 && sSettletank>lowlvlEQ) {
-    while(sSettletank>lowlvlEQ && ssbrtank<80){
+  if(ssbrtank<=filllevel && sSettletank>lowlvlEQ) {
+    while(sSettletank>lowlvlEQ && ssbrtank<filllevel){
       Sett2SBR(1);
       waiting(3000);
       delay(100);
@@ -1357,23 +1354,27 @@ void SBRDecantCF(){
   }
 }
 void SBRfullair(){
-  long duration=1*60*1000;//3hrs
+  sbraircyclestarttime=millis();
+    unsigned long tnow= millis();
+    SBRAironoff(1);
+  sbrairontime=tnow;
+  tnow= millis();
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("air ");
+  lcd.print("full Air    ");
   waiting(1);
   lcd.setCursor(0,1);
   lcd.print(ssbrtank);lcd.print("gal  ");
-  unsigned long starttime = millis();
-  delay(100);
-  SBRAironoff(1);
-  while (((millis()-starttime)<duration)){
-    int timedisplay = round((duration-(millis()-starttime))/60/1000);
-    delay(10000);
+  while (tnow-sbraircyclestarttime<3600000){//2hrs
+    int timedisplay = round((3600000-(tnow-sbraircyclestarttime))/60/1000);
+    delay(1000);
     waiting(5);
   lcd.setCursor(0,1);
   lcd.print(ssbrtank);lcd.print("gal  ");
-  lcd.print(timedisplay);lcd.print("min  ");} //2 min
+  lcd.print(timedisplay);lcd.print("min  ");
+    delay(1000);
+    tnow= millis();
+    }//turn on if it was off for 2 min
     SBRAironoff(0);}
 void SBRthirtysecair(){
   sbraircyclestarttime=millis();
@@ -1480,7 +1481,7 @@ void regularday(){
   //uvdisinfect(1);
   if (systemstate==0){
     treattimes[0]=timnow;
-    SBRFill(0);
+    SBRFill(50);
     eqtosettlefill(0);
     SBRthirtysecair();
     SBRfiveminair();
@@ -1502,6 +1503,20 @@ void regularday(){
   //  SBRfullair();
     SBRSettling();
     SBRDecantCF();
+    lcd.setCursor(0, 0);
+    lcd.print("Treatment cycle complete  ");
+    fixaverages(10);
+      SBRFill(50);
+      eqtosettlefill(0);
+      fixaverages(10);
+      SBRthirtysecair();
+      SBRfiveminair();
+      SBRfiveminair();
+      SBRfullair();
+      SBRSettling();
+      SBRDecantCF();
+    lcd.setCursor(0, 0);
+    lcd.print("sbr cycle done");
   }
   treattimes[3]=timnow;
   lcd.setCursor(0, 0);
@@ -1513,7 +1528,7 @@ void wasteday(){
   systemstate=0;
   if (systemstate==0){
     treattimes[0]=timnow;
-    SBRFill(0);
+    SBRFill(50);
     eqtosettlefill(0);
     SBRthirtysecair();
     SBRfiveminair();
@@ -1534,6 +1549,20 @@ void wasteday(){
     fixaverages(10);
     SBRSettling();
     SBRDecantCF();
+    lcd.setCursor(0, 0);
+    lcd.print("Treatment cycle complete  ");
+    fixaverages(10);
+      SBRFill(50);
+      eqtosettlefill(0);
+      fixaverages(10);
+      SBRthirtysecair();
+      SBRfiveminair();
+      SBRfiveminair();
+      SBRfullair();
+      SBRSettling();
+      SBRDecantCF();
+    lcd.setCursor(0, 0);
+    lcd.print("sbr cycle done");
   }
   treattimes[3]=timnow;
   lcd.setCursor(0, 0);
@@ -1542,35 +1571,17 @@ void wasteday(){
 }
 void halfwasteday(){
   fixaverages(10);
-  systemstate=0;
-  uvdisinfect(1);
-  if (systemstate==0){
-    treattimes[0]=timnow;
-    SBRFill(0);
+    SBRFill(50);
     eqtosettlefill(0);
     fixaverages(10);
-  }
-  systemstate=3;
-  if (systemstate ==3){
-    treattimes[1]=timnow;
-    uvdisinfect(1);
-    RO(85,1,0,0);
-    uvdisinfect(1);
-    systemstate=2;
-  }
-  if (systemstate==2){
-    treattimes[2]=timnow;
-    fixaverages(10);
-    NF(85,1,0,0);
-    fixaverages(10);
+    SBRthirtysecair();
+    SBRfiveminair();
+    SBRfiveminair();
     SBRfullair();
     SBRSettling();
     SBRDecantCF();
-  }
-  treattimes[3]=timnow;
   lcd.setCursor(0, 0);
-  lcd.print("Waste created ");
-  systemstate=1;
+  lcd.print("sbr cycle done");
 }
 //******     END FUNCTIONS     ******//
 void serialEvent() {   //This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
@@ -1595,7 +1606,7 @@ void serialEvent() {   //This interrupt will trigger when the data coming from t
       RO(80,1,0,1);//command for ro treatment with rinse no waste
     }
     if (incomingByte ==String("CFwoRinse")){
-      SBRFill(0);//command for pretreatment without rinse
+      SBRFill(50);//command for pretreatment without rinse
     }
     if (incomingByte ==String("CFwithRinse")){
       eqtosettlefill(0);//command for pretreatment with rinse
